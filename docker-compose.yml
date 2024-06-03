@@ -1,0 +1,65 @@
+version: "3.8"
+services:
+  #mysql:
+  #  image: mysql:8.0
+  #  ports:
+  #    - 3306:3306
+  #  volumes:
+  #    - ./backend/mysql/config/mysql-docker.cnf:/etc/mysql/conf.d/mysql-docker.cnf:ro
+  #    - ./backend/mysql/config/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+  #    - ./backend/mysql/data/:/var/lib/mysql:rw
+  #    - ./backend/mysql/log/:/var/log/mysql:rw
+  #  restart: always
+  #  environment:
+  #    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+  #    MYSQL_DATABASE: ${MYSQL_DATABASE}
+
+  #apache:
+  #  build: ./backend/apache
+  #  ports:
+  #    - 8080:80
+  #  volumes:
+  #    - ./public:/var/www/html/public:ro
+  #    - ./backend/apache/config/vhosts.conf:/etc/apache2/sites-enabled/vhosts.conf:ro
+  #  depends_on:
+  #    - php
+  #php:
+  #  build:
+  #    context: .
+  #    dockerfile: ./backend/php/Dockerfile
+  #  environment:
+  #    APP_ENV: ${APP_ENV}
+  #    MYSQL_HOST: mysql
+  #    MYSQL_PORT: 3306
+  #  volumes:
+  #    - .:/var/www/html:rw
+  #    - ./backend/php/logs:/app/var/logs:rw
+  #  depends_on:
+  #    - mysql
+
+  php:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - /opt/lampp/htdocs/backend:/var/www/html:delegated
+      - ./backend/php/logs:/app/var/logs:rw
+    networks:
+      - app-network
+
+  react:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react
+    restart: unless-stopped
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
