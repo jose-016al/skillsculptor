@@ -33,10 +33,6 @@ COPY ./apache/my_virtual_hosts.conf /opt/lampp/etc/extra/my_virtual_hosts.conf
 # Modificar la configuración de Apache para incluir el nuevo archivo de configuración
 RUN echo "Include etc/extra/my_virtual_hosts.conf" >> /opt/lampp/etc/httpd.conf
 
-# Agregar las entradas al archivo /etc/hosts
-RUN echo "127.0.0.1 skillsculptoradmin.com" >> /etc/hosts \
-    && echo "127.0.0.1 skillsculptor.com" >> /etc/hosts
-    
 # Instalar dependencias de Symfony y PHP
 RUN composer install --no-scripts
 
