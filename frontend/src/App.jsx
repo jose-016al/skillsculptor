@@ -19,13 +19,12 @@ const App = () => (
     <div className={`bg-primary ${styles.paddingX} ${styles.flexStart}`}>
       <div className={`${styles.boxWidth}`}>
         <Languages />
+        <Tools />
         <Project1 />
         <Project_this_Website_React />
         <Project_WebApp_Flask />
         <Project2 />
         <Project3 />
-        <Testimonials />
-        <Tools />
         <Business />
         <CTA />
         {/* <Stats /> */}
