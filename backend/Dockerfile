@@ -20,13 +20,23 @@ RUN wget https://get.symfony.com/cli/installer -O - | bash \
     && mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
 
 # Establecer el directorio de trabajo
-WORKDIR /var/www/html
+WORKDIR /opt/lampp/htdocs
 
 ENV COMPOSER_ALLOW_SUPERUSER=1 
 
 # Copiar los archivos de la aplicación
-COPY . /var/www/html
+COPY . /opt/lampp/htdocs
 
+# Copiar el archivo de configuración de virtual hosts
+COPY ./apache/my_virtual_hosts.conf /opt/lampp/etc/extra/my_virtual_hosts.conf
+
+# Modificar la configuración de Apache para incluir el nuevo archivo de configuración
+RUN echo "Include etc/extra/my_virtual_hosts.conf" >> /opt/lampp/etc/httpd.conf
+
+# Agregar las entradas al archivo /etc/hosts
+RUN echo "127.0.0.1 skillsculptoradmin.com" >> /etc/hosts \
+    && echo "127.0.0.1 skillsculptor.com" >> /etc/hosts
+    
 # Instalar dependencias de Symfony y PHP
 RUN composer install --no-scripts
 

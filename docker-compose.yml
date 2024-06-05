@@ -42,8 +42,10 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     volumes:
-      - /opt/lampp/htdocs/backend:/var/www/html:delegated
+      - ./backend:/var/www/html:delegated
       - ./backend/php/logs:/app/var/logs:rw
+    ports:
+      - "8000:80"
     networks:
       - app-network
 
