@@ -1,21 +1,17 @@
-# Dockerfile para React
-FROM node:20
+FROM node:18-alpine
 
-# Configurar el directorio de trabajo
 WORKDIR /app
 
-# Copiar los archivos del proyecto
 COPY package.json .
-COPY package-lock.json .
 
-# Instalar las dependencias de React
 RUN npm install
 
-# Copiar el resto de los archivos del proyecto
+RUN npm i -g serve
+
 COPY . .
 
-# Exponer el puerto 3000 para la aplicación React
+RUN npm run build
+
 EXPOSE 3000
 
-# Iniciar la aplicación React en modo desarrollo
-CMD ["npm", "run", "dev"]
+CMD [ "serve", "-s", "dist" ]

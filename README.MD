@@ -1,7 +1,17 @@
-DATABASE_URL="mysql://daulin:12345678@172.16.90.170:3306/skillsculptor?serverVersion=8.0.32&charset=utf8mb4"
+# SkillsCulptor
 
-sudo echo "127.0.0.1 skillsculptoradmin.com" >> /etc/hosts
+Este proyecto utiliza Docker para la gestión de entornos. Después de crear el proyecto, se realizó una modificación en el archivo vite.config.js para especificar el host y el puerto que se utilizarán en el entorno Docker
 
-CREATE USER 'daulin'@'%.%.%.%' IDENTIFIED BY '12345678';
-GRANT ALL PRIVILEGES ON *.* TO 'daulin'@'%.%.%.%' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
+# Construir el contenedor Docker
+Ejecuta este comando para crear la imagen en tu máquina local e iniciar el contenedor.   Solo necesitas ejecutar este comando la primera vez y cada vez que realices cambios en el archivo docker-compose.yml
+```bash
+docker-compose up --build --no-recreate -d
+```
+A partir de la segunda vez podemos utilizar
+```bash
+docker-compose up -d
+```
+Ahora nuestro contenedor está activo y debería poder probarlo usando el siguiente comando
+```bash
+docker-compose ps
+```

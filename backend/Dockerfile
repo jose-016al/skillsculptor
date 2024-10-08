@@ -1,46 +1,39 @@
-# Dockerfile en la carpeta Backend/Carpeta php
-FROM php:8.2
+# Utilizamos una imagen oficial de PHP 8.1 como imagen base
+FROM php:8.3-apache
 
-# Instalar dependencias del sistema
-RUN apt-get update \
-    && apt-get install -y wget unzip git \
-    && apt-get clean \
+# Instalamos los paquetes necesarios
+RUN apt-get update && apt-get install -y \
+    git \ 
+    curl \
+    vim \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar extensiones PHP necesarias para MySQL
-RUN docker-php-ext-install pdo_mysql
+# Configuramos los módulos de PHP
+RUN docker-php-ext-install pdo pdo_mysql
 
-# Instalar Composer
-RUN wget https://getcomposer.org/installer -O composer-setup.php \
-    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
-    && rm composer-setup.php
+# Habilita mod_rewrite
+RUN a2enmod rewrite
 
-# Instalar Symfony CLI
-RUN wget https://get.symfony.com/cli/installer -O - | bash \
-    && mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
+# Establecemos la raíz web de Apache en el directorio público del proyecto
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
-# Establecer el directorio de trabajo
-WORKDIR /opt/lampp/htdocs
+# Copiamos nuestra aplicación a la carpeta de trabajo del contenedor
+COPY . /var/www/html/
 
-ENV COMPOSER_ALLOW_SUPERUSER=1 
+# Establecemos la carpeta de trabajo
+WORKDIR /var/www/html/
 
-# Copiar los archivos de la aplicación
-COPY . /opt/lampp/htdocs
+# Ejecutamos los comandos necesarios para instalar las dependencias de PHP y ejecutar nuestro proyecto
+RUN curl -sS https://getcomposer.org/installer | php \
+    && php composer.phar install \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 777 /var/www/html/var
 
-# Copiar el archivo de configuración de virtual hosts
-COPY ./apache/my_virtual_hosts.conf /opt/lampp/etc/extra/my_virtual_hosts.conf
+# Exponemos el puerto 80 para el tráfico HTTP
+EXPOSE 80
 
-# Modificar la configuración de Apache para incluir el nuevo archivo de configuración
-RUN echo "Include etc/extra/my_virtual_hosts.conf" >> /opt/lampp/etc/httpd.conf
-
-# Instalar dependencias de Symfony y PHP
-RUN composer install --no-scripts
-
-# Crear la base de datos
-RUN php bin/console doctrine:database:create || true
-
-# Crear el esquema de la base de datos
-RUN php bin/console doctrine:schema:create || true
-
-# Iniciar el servidor de desarrollo de Symfony y especificar el directorio 'public'
-CMD symfony server:start --no-tls --dir=public --port=80
+# Iniciamos el servidor Apache en primer plano
+CMD ["apache2-foreground"]
