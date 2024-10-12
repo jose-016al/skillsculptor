@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PortfolioRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -23,6 +25,17 @@ class Portfolio
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $position = null;
+
+    /**
+     * @var Collection<int, Education>
+     */
+    #[ORM\OneToMany(targetEntity: Education::class, mappedBy: 'portfolio')]
+    private Collection $educations;
+
+    public function __construct()
+    {
+        $this->educations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -61,6 +74,36 @@ class Portfolio
     public function setPosition(?string $position): static
     {
         $this->position = $position;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Education>
+     */
+    public function getEducation(): Collection
+    {
+        return $this->educations;
+    }
+
+    public function addEducation(Education $education): static
+    {
+        if (!$this->educations->contains($education)) {
+            $this->educations[] = $education;
+            $education->setPortfolio($this); // Establece la relación inversa
+        }
+
+        return $this;
+    }
+
+    public function removeEducation(Education $education): static
+    {
+        if ($this->educations->removeElement($education)) {
+            // Configurar la propiedad portfolio a null (si es necesario)
+            if ($education->getPortfolio() === $this) {
+                $education->setPortfolio(null);
+            }
+        }
 
         return $this;
     }

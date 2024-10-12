@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Education;
 use App\Entity\Portfolio;
 use App\Service\ApiFormatter;
 use App\Entity\User;
+use App\Repository\EducationRepository;
 use App\Repository\PortfolioRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Repository\UserRepository;
@@ -67,8 +69,15 @@ use Symfony\Component\String\Slugger\SluggerInterface;
             $portfolio->setUser($user);
             $user->setPortfolio($portfolio); 
 
+            // Crear una nueva instancia de Education y asociarla al Portfolio
+            $education = new Education();
+            $education->setPortfolio($portfolio); // Asigna el Portfolio
+
+            $portfolio->addEducation($education);
+
                 // Guardar el nuevo usuario en la base de datos
             $entityManager->persist($portfolio);
+            $entityManager->persist($education);
             $entityManager->persist($user);
 
             $entityManager->flush();
@@ -208,5 +217,85 @@ use Symfony\Component\String\Slugger\SluggerInterface;
                 // Devolver una respuesta al cliente React
             $portfolioJSON = $apiFormatter->portfolios($portfolio);
             return new JsonResponse($portfolioJSON, 200);
+        }
+
+// Metodos para la education
+
+        #[Route('/{id}/education', name: 'app_api_education', methods: ["POST"])]
+        public function newEducation(Request $request, Security $security, PortfolioRepository $portfolioRepository, EducationRepository $educationRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, int $id): JsonResponse
+        {
+            $entityManager = $doctrine->getManager();
+            $data = json_decode($request->getContent(), true);
+
+            // Obtener el usuario autenticado
+            $user = $security->getUser();
+            if (!$user) {
+                return new JsonResponse(['error' => 'Unauthorized'], 401);
+            }
+
+                // Buscar el portfolio en la base de datos por su id
+            $portfolio = $portfolioRepository->find($id);
+
+                    // Crear una nueva instancia de Education
+            $education = new Education();
+            $education->setTitle($data['title']);
+            $education->setDate($data['date']);
+            $education->setPortfolio($portfolio); // Asociar la educación al portfolio
+
+            // Persistir la nueva educación
+            $entityManager->persist($education);
+            $entityManager->flush();
+
+                // Devolver una respuesta al cliente React
+            $educationJSON = $apiFormatter->educations($education);
+            return new JsonResponse($educationJSON, 201);
+        }
+
+        #[Route('/{id}/edit/education', name: 'app_api_edit_education', methods: ["PUT"])]
+        public function editEducation(Request $request, Education $education, EducationRepository $educationRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        {
+            $entityManager = $doctrine->getManager();
+            $data = json_decode($request->getContent(), true);
+
+                // Obtener el usuario autenticado
+            $user = $security->getUser();
+            if (!$user) {
+                return new JsonResponse(['error' => 'Unauthorized'], 401);
+            }
+
+                // Buscar la education en la base de datos por su id
+            $education = $educationRepository->find($id);
+
+            $education->setTitle($data['title']);
+            $education->setDate($data['date']);
+
+                // Guardar los cambios del usuario en la base de datos
+            $entityManager->flush();
+
+            $educationJSON = $apiFormatter->educations($education);
+            return new JsonResponse($educationJSON, 200);
+        }
+
+        #[Route('/{id}/delete/education', name: 'app_api_delete_education', methods: ["DELETE"])]
+        public function deleteEducation(Request $request, Education $education, EducationRepository $educationRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        {
+            $entityManager = $doctrine->getManager();
+            $data = json_decode($request->getContent(), true);
+
+                // Obtener el usuario autenticado
+            //$user = $security->getUser();
+            //if (!$user) {
+            //    return new JsonResponse(['error' => 'Unauthorized'], 401);
+            //}
+
+                // Buscar la education en la base de datos por su id
+            $education = $educationRepository->find($id);
+
+                // Eliminar la entidad Education
+            $entityManager->remove($education);
+            $entityManager->flush();
+
+            // Devolver una respuesta de éxito
+            return new JsonResponse(['message' => 'Se ha eliminado una formacion'], 204);
         }
     }

@@ -26,6 +26,21 @@ class ApiFormatter
             'position' => $portfolio->getPosition(),
         ];
         
+            // Obtener la educación asociada al portafolio
+        $educations = $portfolio->getEducation(); // Suponiendo que has definido esta relación
+
+        // Inicializar el array de educación
+        $userJSON['portfolio']['education'] = [];
+
+        // Agregar cada educación al array
+        foreach ($educations as $education) {
+            $userJSON['portfolio']['education'][] = [
+                'id' => $education->getId(),
+                'title' => $education->getTitle(),
+                'date' => $education->getDate(),
+            ];
+        }
+
         return $userJSON;
     }
 
@@ -40,6 +55,19 @@ class ApiFormatter
         );
 
         return $portfolioJSON;
+    }
+
+    public function educations($education): array
+    {
+        $educationJSON=[];
+
+        $educationJSON = array (
+            'id' => $education->getId(),
+            'title' => $education->getTitle(),
+            'date' => $education->getDate(),
+        );
+
+        return $educationJSON;
     }
 
 }
