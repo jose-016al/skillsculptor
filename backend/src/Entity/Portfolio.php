@@ -32,9 +32,16 @@ class Portfolio
     #[ORM\OneToMany(targetEntity: Education::class, mappedBy: 'portfolio')]
     private Collection $educations;
 
+    /**
+     * @var Collection<int, Experience>
+     */
+    #[ORM\OneToMany(targetEntity: Experience::class, mappedBy: 'portfolio')]
+    private Collection $experiences;
+
     public function __construct()
     {
         $this->educations = new ArrayCollection();
+        $this->experiences = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -102,6 +109,36 @@ class Portfolio
             // Configurar la propiedad portfolio a null (si es necesario)
             if ($education->getPortfolio() === $this) {
                 $education->setPortfolio(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Experience>
+     */
+    public function getExperience(): Collection
+    {
+        return $this->experiences;
+    }
+
+    public function addExperience(Experience $experience): static
+    {
+        if (!$this->experiences->contains($experience)) {
+            $this->experiences[] = $experience;
+            $experience->setPortfolio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExperience(Experience $experience): static
+    {
+        if ($this->experiences->removeElement($experience)) {
+            // set the owning side to null (unless already changed)
+            if ($experience->getPortfolio() === $this) {
+                $experience->setPortfolio(null);
             }
         }
 

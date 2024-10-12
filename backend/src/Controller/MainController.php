@@ -13,8 +13,6 @@ class MainController extends AbstractController
     public function index(Security $security): Response
     {
 
-        dump($security->getUser()->getId());
-
         return $this->render('main/index.html.twig', [
             'controller_name' => 'MainController',
         ]);

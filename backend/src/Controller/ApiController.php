@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Education;
+use App\Entity\Experience;
 use App\Entity\Portfolio;
 use App\Service\ApiFormatter;
 use App\Entity\User;
 use App\Repository\EducationRepository;
+use App\Repository\ExperienceRepository;
 use App\Repository\PortfolioRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Repository\UserRepository;
@@ -75,9 +77,16 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
             $portfolio->addEducation($education);
 
+            // Crear una nueva instancia de Experience y asociarla al Portfolio
+            $experience = new Experience();
+            $experience->setPortfolio($portfolio); // Asigna el Portfolio
+
+            $portfolio->addExperience($experience);
+
                 // Guardar el nuevo usuario en la base de datos
             $entityManager->persist($portfolio);
             $entityManager->persist($education);
+            $entityManager->persist($experience);
             $entityManager->persist($user);
 
             $entityManager->flush();
@@ -220,7 +229,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
         }
 
 // Metodos para la education
-
+        
         #[Route('/{id}/education', name: 'app_api_education', methods: ["POST"])]
         public function newEducation(Request $request, Security $security, PortfolioRepository $portfolioRepository, EducationRepository $educationRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, int $id): JsonResponse
         {
@@ -283,10 +292,10 @@ use Symfony\Component\String\Slugger\SluggerInterface;
             $data = json_decode($request->getContent(), true);
 
                 // Obtener el usuario autenticado
-            //$user = $security->getUser();
-            //if (!$user) {
-            //    return new JsonResponse(['error' => 'Unauthorized'], 401);
-            //}
+            $user = $security->getUser();
+            if (!$user) {
+                return new JsonResponse(['error' => 'Unauthorized'], 401);
+            }
 
                 // Buscar la education en la base de datos por su id
             $education = $educationRepository->find($id);
@@ -298,4 +307,89 @@ use Symfony\Component\String\Slugger\SluggerInterface;
             // Devolver una respuesta de éxito
             return new JsonResponse(['message' => 'Se ha eliminado una formacion'], 204);
         }
+
+// Metodos para la experience
+
+        #[Route('/{id}/experience', name: 'app_api_experience', methods: ["POST"])]
+        public function newExperience(Request $request, Security $security, PortfolioRepository $portfolioRepository, ExperienceRepository $experienceRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, int $id): JsonResponse
+        {
+            $entityManager = $doctrine->getManager();
+            $data = json_decode($request->getContent(), true);
+
+            // Obtener el usuario autenticado
+            $user = $security->getUser();
+            if (!$user) {
+                return new JsonResponse(['error' => 'Unauthorized'], 401);
+            }
+
+                // Buscar el portfolio en la base de datos por su id
+            $portfolio = $portfolioRepository->find($id);
+
+                    // Crear una nueva instancia de Experience
+            $experience = new Experience();
+            $experience->setTitle($data['title']);
+            $experience->setDate($data['date']);
+            $experience->setCompany($data['company']);
+            $experience->setPage($data['page']);
+            $experience->setPortfolio($portfolio); // Asociar la experience al portfolio
+
+            // Persistir la nueva experience
+            $entityManager->persist($experience);
+            $entityManager->flush();
+
+                // Devolver una respuesta al cliente React
+            $experienceJSON = $apiFormatter->experiences($experience);
+            return new JsonResponse($experienceJSON, 201);
+        }
+
+        #[Route('/{id}/edit/experience', name: 'app_api_edit_experience', methods: ["PUT"])]
+        public function editExperience(Request $request, Experience $experience, ExperienceRepository $experienceRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        {
+            $entityManager = $doctrine->getManager();
+            $data = json_decode($request->getContent(), true);
+
+                // Obtener el usuario autenticado
+            $user = $security->getUser();
+            if (!$user) {
+                return new JsonResponse(['error' => 'Unauthorized'], 401);
+            }
+
+                // Buscar la experience en la base de datos por su id
+            $experience = $experienceRepository->find($id);
+
+            $experience->setTitle($data['title']);
+            $experience->setDate($data['date']);
+            $experience->setCompany($data['company']);
+            $experience->setPage($data['page']);
+
+                // Guardar los cambios del usuario en la base de datos
+            $entityManager->flush();
+
+            $experienceJSON = $apiFormatter->experiences($experience);
+            return new JsonResponse($experienceJSON, 200);
+        }
+
+        #[Route('/{id}/delete/experience', name: 'app_api_delete_education', methods: ["DELETE"])]
+        public function deleteExperience(Request $request, Experience $experience, ExperienceRepository $experienceRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        {
+            $entityManager = $doctrine->getManager();
+            $data = json_decode($request->getContent(), true);
+
+                // Obtener el usuario autenticado
+            $user = $security->getUser();
+            if (!$user) {
+                return new JsonResponse(['error' => 'Unauthorized'], 401);
+            }
+
+                // Buscar la experience en la base de datos por su id
+            $experience = $experienceRepository->find($id);
+
+                // Eliminar la entidad experience
+            $entityManager->remove($experience);
+            $entityManager->flush();
+
+            // Devolver una respuesta de éxito
+            return new JsonResponse(['message' => 'Se ha eliminado una experienica'], 204);
+        }
+
     }

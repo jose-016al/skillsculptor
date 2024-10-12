@@ -41,6 +41,23 @@ class ApiFormatter
             ];
         }
 
+        // Obtener la educación asociada al portafolio
+        $experiences = $portfolio->getExperience(); // Suponiendo que has definido esta relación
+
+        // Inicializar el array de educación
+        $userJSON['portfolio']['experience'] = [];
+
+        // Agregar cada educación al array
+        foreach ($experiences as $experience) {
+            $userJSON['portfolio']['experience'][] = [
+                'id' => $experience->getId(),
+                'title' => $experience->getTitle(),
+                'date' => $experience->getDate(),
+                'company' => $experience->getCompany(),
+                'page' => $experience->getPage(),
+            ];
+        }
+
         return $userJSON;
     }
 
@@ -68,6 +85,19 @@ class ApiFormatter
         );
 
         return $educationJSON;
+    }
+
+    public function experiences($experience): array
+    {
+        $experienceJSON=[];
+
+        $experienceJSON = array (
+            'id' => $experience->getId(),
+            'title' => $experience->getTitle(),
+            'date' => $experience->getDate(),
+        );
+
+        return $experienceJSON;
     }
 
 }
