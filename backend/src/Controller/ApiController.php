@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Portfolio;
 use App\Service\ApiFormatter;
 use App\Entity\User;
+use App\Repository\PortfolioRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Repository\UserRepository;
 use Symfony\Component\Routing\Attribute\Route;
@@ -12,12 +13,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-// use Symfony\Component\HttpFoundation\Response;
-
 #[Route('/api')] // gestionaremos el trafico a esta ruta
+
+// Metodos para los usuarios
+
     class ApiController extends AbstractController
     {
         #[Route('/users', name: 'app_api_users', methods:["GET"])]
@@ -98,15 +101,25 @@ use Symfony\Component\String\Slugger\SluggerInterface;
             return new JsonResponse($userJSON, 200);
         }
 
-            // Edita los datos de un usuario mediante una solicitud POST a /api/edituser
-        #[Route('/edituser', name: 'app_api_edit_user', methods: ["POST"])]
-        public function editUser(Request $request, UserRepository $userRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine): JsonResponse
+        #[Route('/{id}/edit/user', name: 'app_api_edit_user', methods: ["PUT"])]
+        public function edituser(Request $request, User $user, UserRepository $userRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
 
-                // Buscar al usuario en la base de datos por su email
-            $user = $userRepository->findOneBy(['email' => $data['email']]);
+            // Obtener el usuario autenticado
+            $currentUser = $security->getUser();
+            if (!$currentUser) {
+                return new JsonResponse(['error' => 'Unauthorized'], 401);
+            }
+            
+            // Buscar el portfolio en la base de datos por su id
+            $user = $userRepository->find($id);
+                
+                    // Verificar que el usuario autenticado es el mismo que el que se va a editar
+            if ($currentUser->getId() !== $user->getId()) {
+                return new JsonResponse(['error' => 'Forbidden: You can only edit your own profile'], 403);
+            }
 
             $user->setEmail($data['email']);
             $user->setName($data['name']);
@@ -117,20 +130,30 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
                 // Devolver una respuesta al cliente React
             $userJSON = $apiFormatter->users($user);
-            return new JsonResponse($userJSON, 201);
+            return new JsonResponse($userJSON, 200);
         }
 
-        #[Route('/imageuser', name: 'app_api_image_user', methods: ["POST"])]
-        public function imageUser(Request $request, UserRepository $userRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, SluggerInterface $slugger): JsonResponse
+        #[Route('/{id}/upload', name: 'app_api_image_user', methods: ["POST"])]
+        public function imageUser(Request $request, Security $security, UserRepository $userRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, SluggerInterface $slugger, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
 
+            // Obtener el usuario autenticado
+            $currentUser = $security->getUser();
+            if (!$currentUser) {
+                return new JsonResponse(['error' => 'Unauthorized'], 401);
+            }
+
+                // Buscar el portfolio en la base de datos por su id
+            $user = $userRepository->find($id);
+
+                    // Verificar que el usuario autenticado es el mismo que el que se va a editar
+            if ($currentUser->getId() !== $user->getId()) {
+                return new JsonResponse(['error' => 'Forbidden: You can only edit your own profile'], 403);
+            }
+
             // Obtener el archivo de imagen desde el formulario
             $imageFile = $request->files->get('image');
-            $email = $request->request->get('email');
-
-            // Buscar al usuario en la base de datos por su email
-            $user = $userRepository->findOneBy(['email' => $email]);
 
             // Generar un nombre seguro para el archivo
             $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
@@ -157,5 +180,33 @@ use Symfony\Component\String\Slugger\SluggerInterface;
                 // Manejar cualquier error durante la subida del archivo
                 return new JsonResponse(['error' => 'File upload failed'], 500);
             }
+        }
+
+// Metodos para el portfolio
+
+        #[Route('/{id}/edit/portfolio', name: 'app_api_edit_portfolio', methods: ["PUT"])]
+        public function editportolio(Request $request, Portfolio $portfolio, PortfolioRepository $portfolioRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        {
+            $entityManager = $doctrine->getManager();
+            $data = json_decode($request->getContent(), true);
+
+                    // Obtener el usuario autenticado
+            $user = $security->getUser();
+            if (!$user) {
+                return new JsonResponse(['error' => 'Unauthorized'], 401);
+            }
+
+                // Buscar el portfolio en la base de datos por su id
+            $portfolio = $portfolioRepository->find($id);
+
+            $portfolio->setDescription($data['description']);
+            $portfolio->setPosition($data['position']);
+
+                // Guardar los cambios del usuario en la base de datos
+            $entityManager->flush();
+
+                // Devolver una respuesta al cliente React
+            $portfolioJSON = $apiFormatter->portfolios($portfolio);
+            return new JsonResponse($portfolioJSON, 200);
         }
     }

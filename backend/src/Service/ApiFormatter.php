@@ -22,12 +22,24 @@ class ApiFormatter
         // Agregar los datos del portfolio directamente
         $userJSON['portfolio'] = [
             'id' => $portfolio->getId(),
-            //'title' => $portfolio->getTitle(), // Asegúrate de que este método existe
-            //'description' => $portfolio->getDescription(), // Asegúrate de que este método existe
-            // Añadir más campos según tu entidad Portfolio
+            'description' => $portfolio->getDescription(),
+            'position' => $portfolio->getPosition(),
         ];
         
         return $userJSON;
+    }
+
+    public function portfolios($portfolio): array
+    {
+        $portfolioJSON=[];
+
+        $portfolioJSON = array (
+            'id' => $portfolio->getId(),
+            'description' => $portfolio->getDescription(),
+            'position' => $portfolio->getPosition(),
+        );
+
+        return $portfolioJSON;
     }
 
 }
