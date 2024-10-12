@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 // use Symfony\Component\HttpFoundation\Response;
 
@@ -50,6 +52,7 @@ use Doctrine\Persistence\ManagerRegistry;
             $user->setName($data['name']);
             $user->setLastName($data['last_name']);
             $user->setRoles(['ROLE_USER']);
+            $user->setImage('default.png'); // Asegúrate de que la imagen default.png esté en la carpeta correcta
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
@@ -59,12 +62,12 @@ use Doctrine\Persistence\ManagerRegistry;
 
             $portfolio = new Portfolio();
             $portfolio->setUser($user);
+            $user->setPortfolio($portfolio); 
 
                 // Guardar el nuevo usuario en la base de datos
-            $entityManager->persist($user);
-            $entityManager->flush();
-
             $entityManager->persist($portfolio);
+            $entityManager->persist($user);
+
             $entityManager->flush();
 
                 // Devolver una respuesta al cliente React
@@ -115,5 +118,44 @@ use Doctrine\Persistence\ManagerRegistry;
                 // Devolver una respuesta al cliente React
             $userJSON = $apiFormatter->users($user);
             return new JsonResponse($userJSON, 201);
+        }
+
+        #[Route('/imageuser', name: 'app_api_image_user', methods: ["POST"])]
+        public function imageUser(Request $request, UserRepository $userRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, SluggerInterface $slugger): JsonResponse
+        {
+            $entityManager = $doctrine->getManager();
+
+            // Obtener el archivo de imagen desde el formulario
+            $imageFile = $request->files->get('image');
+            $email = $request->request->get('email');
+
+            // Buscar al usuario en la base de datos por su email
+            $user = $userRepository->findOneBy(['email' => $email]);
+
+            // Generar un nombre seguro para el archivo
+            $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = $slugger->slug($originalFilename);
+            $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+
+            try {
+                // Mover el archivo a la carpeta designada
+                $imageFile->move(
+                    $this->getParameter('imagen_directory'), // Asegúrate de que esté definido en config/services.yaml
+                    $newFilename
+                );
+
+                // Asignar el nuevo nombre del archivo al usuario
+                $user->setImage($newFilename);
+                
+                // Guardar los cambios del usuario en la base de datos
+                $entityManager->flush();
+
+                // Devolver una respuesta al cliente
+                $userJSON = $apiFormatter->users($user);
+                return new JsonResponse($userJSON, 201);
+            } catch (FileException $e) {
+                // Manejar cualquier error durante la subida del archivo
+                return new JsonResponse(['error' => 'File upload failed'], 500);
+            }
         }
     }
