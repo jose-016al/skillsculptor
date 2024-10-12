@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Portfolio;
 use App\Service\ApiFormatter;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,9 +19,19 @@ use Doctrine\Persistence\ManagerRegistry;
     class ApiController extends AbstractController
     {
         #[Route('/users', name: 'app_api_users', methods:["GET"])]
-        public function users(): JsonResponse
+        public function users(UserRepository $userRepository, Apiformatter $apiFormatter): JsonResponse
         {
-            return new JsonResponse(['success' => true], 200);
+            
+            $users = $userRepository->findAllExceptAdmins();
+
+            $formattedUsers = [];
+
+            // Iterar sobre cada usuario y formatearlo con ApiFormatter
+            foreach ($users as $user) {
+                $formattedUsers[] = $apiFormatter->users($user); // Llamamos al formateador con cada usuario
+            }
+
+            return new JsonResponse($formattedUsers, 200);
         }
 
                 // Crea un nuevo usuario mediante una solicitud POST a /api/register
@@ -45,8 +56,15 @@ use Doctrine\Persistence\ManagerRegistry;
                     $data['password']
                 )
             );
+
+            $portfolio = new Portfolio();
+            $portfolio->setUser($user);
+
                 // Guardar el nuevo usuario en la base de datos
             $entityManager->persist($user);
+            $entityManager->flush();
+
+            $entityManager->persist($portfolio);
             $entityManager->flush();
 
                 // Devolver una respuesta al cliente React
@@ -75,5 +93,27 @@ use Doctrine\Persistence\ManagerRegistry;
                 // Devolver los datos del usuario en formato JSON
             $userJSON = $apiFormatter->users($user);
             return new JsonResponse($userJSON, 200);
+        }
+
+            // Edita los datos de un usuario mediante una solicitud POST a /api/edituser
+        #[Route('/edituser', name: 'app_api_edit_user', methods: ["POST"])]
+        public function editUser(Request $request, UserRepository $userRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine): JsonResponse
+        {
+            $entityManager = $doctrine->getManager();
+            $data = json_decode($request->getContent(), true);
+
+                // Buscar al usuario en la base de datos por su email
+            $user = $userRepository->findOneBy(['email' => $data['email']]);
+
+            $user->setEmail($data['email']);
+            $user->setName($data['name']);
+            $user->setLastName($data['last_name']);
+
+                // Guardar los cambios del usuario en la base de datos
+            $entityManager->flush();
+
+                // Devolver una respuesta al cliente React
+            $userJSON = $apiFormatter->users($user);
+            return new JsonResponse($userJSON, 201);
         }
     }

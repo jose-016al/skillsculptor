@@ -19,6 +19,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         parent::__construct($registry, User::class);
     }
 
+    // Devuelve todos los usuarios que no tengan rol de administrador
+    public function findAllExceptAdmins(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.roles NOT LIKE :adminRole')
+            ->setParameter('adminRole', '%ROLE_ADMIN%')
+            ->getQuery()
+            ->getResult();
+
+    }
+
     // Busca un email pasado por parametro de la base de datos
     public function findByEmail(string $email): ?User
     {
