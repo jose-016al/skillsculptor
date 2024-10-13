@@ -24,6 +24,7 @@ class ApiFormatter
             'id' => $portfolio->getId(),
             'description' => $portfolio->getDescription(),
             'position' => $portfolio->getPosition(),
+            'stack' => $portfolio->getStack(),
         ];
         
             // Obtener la educación asociada al portafolio
@@ -86,6 +87,7 @@ class ApiFormatter
             'id' => $portfolio->getId(),
             'description' => $portfolio->getDescription(),
             'position' => $portfolio->getPosition(),
+            'stack' => $portfolio->getStack(),
         );
 
         return $portfolioJSON;

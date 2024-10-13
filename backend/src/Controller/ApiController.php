@@ -207,6 +207,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
             $portfolio->setDescription($data['description']);
             $portfolio->setPosition($data['position']);
+            $portfolio->setStack($data['stack']);
 
                 // Guardar los cambios del usuario en la base de datos
             $entityManager->flush();

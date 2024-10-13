@@ -44,6 +44,9 @@ class Portfolio
     #[ORM\OneToMany(targetEntity: Project::class, mappedBy: 'portfolio')]
     private Collection $projects;
 
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    private ?array $stack = [];
+
     public function __construct()
     {
         $this->educations = new ArrayCollection();
@@ -178,6 +181,18 @@ class Portfolio
                 $project->setPortfolio(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStack(): ?array
+    {
+        return $this->stack;
+    }
+
+    public function setStack(?array $stack): static
+    {
+        $this->stack = $stack;
 
         return $this;
     }
