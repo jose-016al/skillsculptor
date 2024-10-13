@@ -18,10 +18,6 @@ class ExperienceType extends AbstractType
             ->add('company')
             ->add('date')
             ->add('page')
-            ->add('portfolio', EntityType::class, [
-                'class' => Portfolio::class,
-                'choice_label' => 'id',
-            ])
         ;
     }
 

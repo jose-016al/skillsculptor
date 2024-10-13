@@ -29,19 +29,19 @@ class Portfolio
     /**
      * @var Collection<int, Education>
      */
-    #[ORM\OneToMany(targetEntity: Education::class, mappedBy: 'portfolio')]
+    #[ORM\OneToMany(targetEntity: Education::class, mappedBy: 'portfolio', cascade: ['remove'])]
     private Collection $educations;
 
     /**
      * @var Collection<int, Experience>
      */
-    #[ORM\OneToMany(targetEntity: Experience::class, mappedBy: 'portfolio')]
+    #[ORM\OneToMany(targetEntity: Experience::class, mappedBy: 'portfolio', cascade: ['remove'])]
     private Collection $experiences;
 
     /**
      * @var Collection<int, Project>
      */
-    #[ORM\OneToMany(targetEntity: Project::class, mappedBy: 'portfolio')]
+    #[ORM\OneToMany(targetEntity: Project::class, mappedBy: 'portfolio', cascade: ['remove'])]
     private Collection $projects;
 
     #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
@@ -195,5 +195,10 @@ class Portfolio
         $this->stack = $stack;
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this -> id;
     }
 }

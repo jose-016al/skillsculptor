@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Portfolio{% endblock %}
+{% block title %}Editar portfolio{% endblock %}
 
 {% block body %}
-    <h1>Edit Portfolio</h1>
 
-    {{ include('portfolio/_form.html.twig', {'button_label': 'Update'}) }}
+    <div class="row justify-content-center mb-3">
+        {% include 'comunes/_menu.html.twig' %}
 
-    <a href="{{ path('app_portfolio_index') }}">back to list</a>
+        {% include 'comunes/_form.html.twig' with {'titulo': 'Editar portfolio'} %}
+    </div>
 
-    {{ include('portfolio/_delete_form.html.twig') }}
 {% endblock %}

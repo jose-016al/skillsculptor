@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-#[Route('/users')]
+#[Route('/')]
 final class UserController extends AbstractController
 {
     #[Route(name: 'app_user_index', methods: ['GET'])]
@@ -21,41 +21,8 @@ final class UserController extends AbstractController
     {
         $this -> denyAccessUnlessGranted('ROLE_ADMIN');
 
-
         return $this->render('user/index.html.twig', [
             'users' => $userRepository->findAll(),
-        ]);
-    }
-
-    #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $this -> denyAccessUnlessGranted('ROLE_ADMIN');
-
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('user/new.html.twig', [
-            'user' => $user,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
-    public function show(User $user): Response
-    {
-        $this -> denyAccessUnlessGranted('ROLE_ADMIN');
-
-        return $this->render('user/show.html.twig', [
-            'user' => $user,
         ]);
     }
 
@@ -70,7 +37,7 @@ final class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Esto debe estar dentro del condicional que valida el formulario
             $image = $form->get('image')->getData();
-            dump($image);
+            
             if ($image) {
                 $originalFilename = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
 
@@ -106,6 +73,14 @@ final class UserController extends AbstractController
         $this -> denyAccessUnlessGranted('ROLE_ADMIN');
 
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->getString('_token'))) {
+                
+                // Eliminar el portfolio relacionado
+            $portfolio = $user->getPortfolio();
+            if ($portfolio) {
+                // Eliminar el portfolio, esto eliminará automáticamente las entidades relacionadas si tienes configurado el cascade
+                $entityManager->remove($portfolio);
+            }
+
             $entityManager->remove($user);
             $entityManager->flush();
         }

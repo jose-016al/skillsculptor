@@ -16,10 +16,6 @@ class EducationType extends AbstractType
         $builder
             ->add('title')
             ->add('date')
-            ->add('portfolio', EntityType::class, [
-                'class' => Portfolio::class,
-                'choice_label' => 'id',
-            ])
         ;
     }
 

@@ -18,10 +18,6 @@ class ProjectType extends AbstractType
             ->add('description')
             ->add('demo')
             ->add('github')
-            ->add('portfolio', EntityType::class, [
-                'class' => Portfolio::class,
-                'choice_label' => 'id',
-            ])
         ;
     }
 
