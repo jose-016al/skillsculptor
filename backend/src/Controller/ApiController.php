@@ -5,11 +5,13 @@ namespace App\Controller;
 use App\Entity\Education;
 use App\Entity\Experience;
 use App\Entity\Portfolio;
+use App\Entity\Project;
 use App\Service\ApiFormatter;
 use App\Entity\User;
 use App\Repository\EducationRepository;
 use App\Repository\ExperienceRepository;
 use App\Repository\PortfolioRepository;
+use App\Repository\ProjectRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Repository\UserRepository;
 use Symfony\Component\Routing\Attribute\Route;
@@ -70,23 +72,9 @@ use Symfony\Component\String\Slugger\SluggerInterface;
             $portfolio = new Portfolio();
             $portfolio->setUser($user);
             $user->setPortfolio($portfolio); 
-
-            // Crear una nueva instancia de Education y asociarla al Portfolio
-            $education = new Education();
-            $education->setPortfolio($portfolio); // Asigna el Portfolio
-
-            $portfolio->addEducation($education);
-
-            // Crear una nueva instancia de Experience y asociarla al Portfolio
-            $experience = new Experience();
-            $experience->setPortfolio($portfolio); // Asigna el Portfolio
-
-            $portfolio->addExperience($experience);
-
+                
                 // Guardar el nuevo usuario en la base de datos
             $entityManager->persist($portfolio);
-            $entityManager->persist($education);
-            $entityManager->persist($experience);
             $entityManager->persist($user);
 
             $entityManager->flush();
@@ -231,7 +219,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 // Metodos para la education
         
         #[Route('/{id}/education', name: 'app_api_education', methods: ["POST"])]
-        public function newEducation(Request $request, Security $security, PortfolioRepository $portfolioRepository, EducationRepository $educationRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, int $id): JsonResponse
+        public function newEducation(Request $request, Security $security, PortfolioRepository $portfolioRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
@@ -286,7 +274,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
         }
 
         #[Route('/{id}/delete/education', name: 'app_api_delete_education', methods: ["DELETE"])]
-        public function deleteEducation(Request $request, Education $education, EducationRepository $educationRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        public function deleteEducation(Request $request, Education $education, EducationRepository $educationRepository, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
@@ -311,7 +299,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 // Metodos para la experience
 
         #[Route('/{id}/experience', name: 'app_api_experience', methods: ["POST"])]
-        public function newExperience(Request $request, Security $security, PortfolioRepository $portfolioRepository, ExperienceRepository $experienceRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, int $id): JsonResponse
+        public function newExperience(Request $request, Security $security, PortfolioRepository $portfolioRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
@@ -369,8 +357,8 @@ use Symfony\Component\String\Slugger\SluggerInterface;
             return new JsonResponse($experienceJSON, 200);
         }
 
-        #[Route('/{id}/delete/experience', name: 'app_api_delete_education', methods: ["DELETE"])]
-        public function deleteExperience(Request $request, Experience $experience, ExperienceRepository $experienceRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        #[Route('/{id}/delete/experience', name: 'app_api_delete_experience', methods: ["DELETE"])]
+        public function deleteExperience(Request $request, Experience $experience, ExperienceRepository $experienceRepository, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
@@ -390,6 +378,90 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
             // Devolver una respuesta de éxito
             return new JsonResponse(['message' => 'Se ha eliminado una experienica'], 204);
+        }
+
+// Metodos para los project
+
+        #[Route('/{id}/project', name: 'app_api_project', methods: ["POST"])]
+        public function newProject(Request $request, Security $security, PortfolioRepository $portfolioRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, int $id): JsonResponse
+        {
+            $entityManager = $doctrine->getManager();
+            $data = json_decode($request->getContent(), true);
+
+            // Obtener el usuario autenticado
+            $user = $security->getUser();
+            if (!$user) {
+                return new JsonResponse(['error' => 'Unauthorized'], 401);
+            }
+
+                // Buscar el portfolio en la base de datos por su id
+            $portfolio = $portfolioRepository->find($id);
+
+                    // Crear una nueva instancia de Project
+            $project = new Project();
+            $project->setTitle($data['title']);
+            $project->setDescription($data['description']);
+            $project->setDemo($data['demo']);
+            $project->setGithub($data['github']);
+            $project->setPortfolio($portfolio); // Asociar el project al portfolio
+
+            // Persistir el nuevo project
+            $entityManager->persist($project);
+            $entityManager->flush();
+
+                // Devolver una respuesta al cliente React
+            $projectJSON = $apiFormatter->projects($project);
+            return new JsonResponse($projectJSON, 201);
+        }
+
+        #[Route('/{id}/edit/project', name: 'app_api_edit_project', methods: ["PUT"])]
+        public function editProject(Request $request, Project $project, ProjectRepository $projectRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        {
+            $entityManager = $doctrine->getManager();
+            $data = json_decode($request->getContent(), true);
+
+                // Obtener el usuario autenticado
+            $user = $security->getUser();
+            if (!$user) {
+                return new JsonResponse(['error' => 'Unauthorized'], 401);
+            }
+
+                // Buscar el project en la base de datos por su id
+            $project = $projectRepository->find($id);
+
+            $project->setTitle($data['title']);
+            $project->setDescription($data['description']);
+            $project->setDemo($data['demo']);
+            $project->setGithub($data['github']);
+
+                // Guardar los cambios del usuario en la base de datos
+            $entityManager->flush();
+
+            $projectJSON = $apiFormatter->projects($project);
+            return new JsonResponse($projectJSON, 200);
+        }
+
+        #[Route('/{id}/delete/project', name: 'app_api_delete_project', methods: ["DELETE"])]
+        public function deleteProject(Request $request, Project $project, ProjectRepository $projectRepository, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        {
+            $entityManager = $doctrine->getManager();
+            $data = json_decode($request->getContent(), true);
+
+                // Obtener el usuario autenticado
+            $user = $security->getUser();
+            if (!$user) {
+                return new JsonResponse(['error' => 'Unauthorized'], 401);
+            }
+
+                // Buscar el project en la base de datos por su id
+            $project = $projectRepository->find($id);
+
+                // Eliminar la entidad project
+            $entityManager->remove($project);
+            $entityManager->flush();
+
+            // Devolver una respuesta de éxito
+            return new JsonResponse(['message' => 'Se ha eliminado un proyecto'], 204);
         }
 
     }

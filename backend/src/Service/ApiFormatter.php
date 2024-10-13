@@ -27,7 +27,7 @@ class ApiFormatter
         ];
         
             // Obtener la educación asociada al portafolio
-        $educations = $portfolio->getEducation(); // Suponiendo que has definido esta relación
+        $educations = $portfolio->getEducation(); 
 
         // Inicializar el array de educación
         $userJSON['portfolio']['education'] = [];
@@ -41,13 +41,13 @@ class ApiFormatter
             ];
         }
 
-        // Obtener la educación asociada al portafolio
-        $experiences = $portfolio->getExperience(); // Suponiendo que has definido esta relación
+        // Obtener la experience asociada al portafolio
+        $experiences = $portfolio->getExperience(); 
 
-        // Inicializar el array de educación
+        // Inicializar el array de experience
         $userJSON['portfolio']['experience'] = [];
 
-        // Agregar cada educación al array
+        // Agregar cada experience al array
         foreach ($experiences as $experience) {
             $userJSON['portfolio']['experience'][] = [
                 'id' => $experience->getId(),
@@ -55,6 +55,23 @@ class ApiFormatter
                 'date' => $experience->getDate(),
                 'company' => $experience->getCompany(),
                 'page' => $experience->getPage(),
+            ];
+        }
+
+        // Obtener los projects asociada al portafolio
+        $projects = $portfolio->getProject(); 
+
+        // Inicializar el array de project
+        $userJSON['portfolio']['project'] = [];
+
+        // Agregar cada project al array
+        foreach ($projects as $project) {
+            $userJSON['portfolio']['project'][] = [
+                'id' => $project->getId(),
+                'title' => $project->getTitle(),
+                'description' => $project->getDescription(),
+                'demo' => $project->getDemo(),
+                'github' => $project->getGithub(),
             ];
         }
 
@@ -98,6 +115,21 @@ class ApiFormatter
         );
 
         return $experienceJSON;
+    }
+
+    public function projects($project): array
+    {
+        $projectJSON=[];
+
+        $projectJSON = array (
+            'id' => $project->getId(),
+            'title' => $project->getTitle(),
+            'description' => $project->getDescription(),
+            'demo' => $project->getDemo(),
+            'github' => $project->getGithub(),
+        );
+
+        return $projectJSON;
     }
 
 }

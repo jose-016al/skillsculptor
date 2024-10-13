@@ -38,10 +38,17 @@ class Portfolio
     #[ORM\OneToMany(targetEntity: Experience::class, mappedBy: 'portfolio')]
     private Collection $experiences;
 
+    /**
+     * @var Collection<int, Project>
+     */
+    #[ORM\OneToMany(targetEntity: Project::class, mappedBy: 'portfolio')]
+    private Collection $projects;
+
     public function __construct()
     {
         $this->educations = new ArrayCollection();
         $this->experiences = new ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -139,6 +146,36 @@ class Portfolio
             // set the owning side to null (unless already changed)
             if ($experience->getPortfolio() === $this) {
                 $experience->setPortfolio(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Project>
+     */
+    public function getProject(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): static
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects[] = $project;
+            $project->setPortfolio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): static
+    {
+        if ($this->projects->removeElement($project)) {
+            // set the owning side to null (unless already changed)
+            if ($project->getPortfolio() === $this) {
+                $project->setPortfolio(null);
             }
         }
 
