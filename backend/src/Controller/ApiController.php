@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -86,45 +87,70 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
             // Realiza el proceso de inicio de sesion mediante una solicitud POST a /api//login
         #[Route('/login', name: 'app_api_login', methods: ['POST'])]
-        public function login(Request $request, UserRepository $userRepository, UserPasswordHasherInterface $passwordEncoder, Apiformatter $apiFormatter): JsonResponse
+        public function login(Request $request, UserRepository $userRepository, UserPasswordHasherInterface $passwordEncoder, Apiformatter $apiFormatter, JWTEncoderInterface $jwtEncoder): JsonResponse
         {
             $data = json_decode($request->getContent(), true);
             $user = $userRepository->findOneBy(['email' => $data['email']]);
-
-                // Si el usuario no existe, devolver un error de autenticación
+        
+            // Si el usuario no existe, devolver un error de autenticación
             if (!$user) {
-                return new JsonResponse(false, 401);
+                return new JsonResponse(['error' => 'Usuario no encontrado'], 404);
             }
-
-                // Verificar que la contraseña es correcta
+        
+            // Verificar que la contraseña es correcta
             $isPasswordValid = $passwordEncoder->isPasswordValid($user, $data['password']);
             if (!$isPasswordValid) {
-                return new JsonResponse(false, 401);
+                return new JsonResponse(['error' => 'Contraseña incorrecta'], 401);
             }
-
-                // Devolver los datos del usuario en formato JSON
+        
+            // Generar el token JWT
+            $token = $jwtEncoder->encode([
+                'id' => $user->getId(),
+                'username' => $user->getEmail(),
+                'roles' => $user->getRoles(),
+            ]);
+        
+            // Devolver los datos del usuario y el token en formato JSON
             $userJSON = $apiFormatter->users($user);
-            return new JsonResponse($userJSON, 200);
+            return new JsonResponse(['user' => $userJSON, 'token' => $token], 200);
         }
-
+            
         #[Route('/{id}/edit/user', name: 'app_api_edit_user', methods: ["PUT"])]
-        public function edituser(Request $request, User $user, UserRepository $userRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        public function edituser(Request $request, User $user, UserRepository $userRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, JWTEncoderInterface $jwtEncoder, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
 
-            // Obtener el usuario autenticado
-            $currentUser = $security->getUser();
-            if (!$currentUser) {
-                return new JsonResponse(['error' => 'Unauthorized'], 401);
+            // Obtener el token JWT de la cabecera Authorization
+            $authHeader = $request->headers->get('Authorization');
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return new JsonResponse(['error' => 'Token no proporcionado'], 401);
             }
             
-            // Buscar el portfolio en la base de datos por su id
+            // Extraer el token (sin la palabra "Bearer ")
+            $token = substr($authHeader, 7);
+
+            try {
+                // Decodificar el token JWT
+                $decodedToken = $jwtEncoder->decode($token);
+            } catch (\Exception $e) {
+                return new JsonResponse(['error' => 'Unauthorized'], 401);
+            }
+
+            // Obtener el ID del usuario desde el token
+            $userIdFromToken = $decodedToken['id'];
+
+            // Buscar el usuario en la base de datos por su ID
             $user = $userRepository->find($id);
-                
-                    // Verificar que el usuario autenticado es el mismo que el que se va a editar
-            if ($currentUser->getId() !== $user->getId()) {
-                return new JsonResponse(['error' => 'Forbidden: You can only edit your own profile'], 403);
+
+            // Asegurarse de que el usuario existe
+            if (!$user) {
+                return new JsonResponse(['error' => 'Usuario no encontrado'], 404);
+            }
+
+            // Verificar que el ID del token coincide con el ID del usuario que se va a editar
+            if ($user->getId() !== $userIdFromToken) {
+                return new JsonResponse(['error' => 'No tienes permisos para editar este usuario'], 403);
             }
 
             $user->setEmail($data['email']);
@@ -140,22 +166,40 @@ use Symfony\Component\String\Slugger\SluggerInterface;
         }
 
         #[Route('/{id}/upload', name: 'app_api_image_user', methods: ["POST"])]
-        public function imageUser(Request $request, Security $security, UserRepository $userRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, SluggerInterface $slugger, int $id): JsonResponse
+        public function imageUser(Request $request, JWTEncoderInterface $jwtEncoder, UserRepository $userRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, SluggerInterface $slugger, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
 
-            // Obtener el usuario autenticado
-            $currentUser = $security->getUser();
-            if (!$currentUser) {
+            // Obtener el token JWT de la cabecera Authorization
+            $authHeader = $request->headers->get('Authorization');
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return new JsonResponse(['error' => 'Token no proporcionado'], 401);
+            }
+            
+            // Extraer el token (sin la palabra "Bearer ")
+            $token = substr($authHeader, 7);
+
+            try {
+                // Decodificar el token JWT
+                $decodedToken = $jwtEncoder->decode($token);
+            } catch (\Exception $e) {
                 return new JsonResponse(['error' => 'Unauthorized'], 401);
             }
 
-                // Buscar el portfolio en la base de datos por su id
+            // Obtener el ID del usuario desde el token
+            $userIdFromToken = $decodedToken['id'];
+
+            // Buscar el usuario en la base de datos por su ID
             $user = $userRepository->find($id);
 
-                    // Verificar que el usuario autenticado es el mismo que el que se va a editar
-            if ($currentUser->getId() !== $user->getId()) {
-                return new JsonResponse(['error' => 'Forbidden: You can only edit your own profile'], 403);
+            // Asegurarse de que el usuario existe
+            if (!$user) {
+                return new JsonResponse(['error' => 'Usuario no encontrado'], 404);
+            }
+
+            // Verificar que el ID del token coincide con el ID del usuario que se va a editar
+            if ($user->getId() !== $userIdFromToken) {
+                return new JsonResponse(['error' => 'No tienes permisos para editar este usuario'], 403);
             }
 
             // Obtener el archivo de imagen desde el formulario
@@ -191,19 +235,40 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 // Metodos para el portfolio
 
         #[Route('/{id}/edit/portfolio', name: 'app_api_edit_portfolio', methods: ["PUT"])]
-        public function editportolio(Request $request, Portfolio $portfolio, PortfolioRepository $portfolioRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        public function editportolio(Request $request, Portfolio $portfolio, PortfolioRepository $portfolioRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, JWTEncoderInterface $jwtEncoder, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
 
-                    // Obtener el usuario autenticado
-            $user = $security->getUser();
-            if (!$user) {
+            // Obtener el token JWT de la cabecera Authorization
+            $authHeader = $request->headers->get('Authorization');
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return new JsonResponse(['error' => 'Token no proporcionado'], 401);
+            }
+            
+            // Extraer el token (sin la palabra "Bearer ")
+            $token = substr($authHeader, 7);
+
+            try {
+                // Decodificar el token JWT
+                $decodedToken = $jwtEncoder->decode($token);
+            } catch (\Exception $e) {
                 return new JsonResponse(['error' => 'Unauthorized'], 401);
             }
 
-                // Buscar el portfolio en la base de datos por su id
+            // Obtener el ID del usuario desde el token
+            $userIdFromToken = $decodedToken['id'];
+
+            // Buscar el portfolio en la base de datos por su id
             $portfolio = $portfolioRepository->find($id);
+
+            // Buscar el usuario en la base de datos por su ID
+            $user = $portfolio->getUser();
+
+            // Verificar que el ID del token coincide con el ID del usuario que se va a editar
+            if ($user->getId() !== $userIdFromToken) {
+                return new JsonResponse(['error' => 'No tienes permisos para editar este usuario'], 403);
+            }
 
             $portfolio->setDescription($data['description']);
             $portfolio->setPosition($data['position']);
@@ -220,19 +285,45 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 // Metodos para la education
         
         #[Route('/{id}/education', name: 'app_api_education', methods: ["POST"])]
-        public function newEducation(Request $request, Security $security, PortfolioRepository $portfolioRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, int $id): JsonResponse
+        public function newEducation(Request $request, JWTEncoderInterface $jwtEncoder, PortfolioRepository $portfolioRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
 
-            // Obtener el usuario autenticado
-            $user = $security->getUser();
-            if (!$user) {
+            // Obtener el token JWT de la cabecera Authorization
+            $authHeader = $request->headers->get('Authorization');
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return new JsonResponse(['error' => 'Token no proporcionado'], 401);
+            }
+            
+            // Extraer el token (sin la palabra "Bearer ")
+            $token = substr($authHeader, 7);
+
+            try {
+                // Decodificar el token JWT
+                $decodedToken = $jwtEncoder->decode($token);
+            } catch (\Exception $e) {
                 return new JsonResponse(['error' => 'Unauthorized'], 401);
             }
 
-                // Buscar el portfolio en la base de datos por su id
+            // Obtener el ID del usuario desde el token
+            $userIdFromToken = $decodedToken['id'];
+
+            // Buscar el portfolio en la base de datos por su id
             $portfolio = $portfolioRepository->find($id);
+
+            // Buscar el usuario en la base de datos por su ID
+            $user = $portfolio->getUser();
+
+            // Asegurarse de que el usuario existe
+            if (!$user) {
+                return new JsonResponse(['error' => 'Usuario no encontrado'], 404);
+            }
+
+            // Verificar que el ID del token coincide con el ID del usuario que se va a editar
+            if ($user->getId() !== $userIdFromToken) {
+                return new JsonResponse(['error' => 'No tienes permisos para editar este usuario'], 403);
+            }
 
                     // Crear una nueva instancia de Education
             $education = new Education();
@@ -250,19 +341,48 @@ use Symfony\Component\String\Slugger\SluggerInterface;
         }
 
         #[Route('/{id}/edit/education', name: 'app_api_edit_education', methods: ["PUT"])]
-        public function editEducation(Request $request, Education $education, EducationRepository $educationRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        public function editEducation(Request $request, Education $education, EducationRepository $educationRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, JWTEncoderInterface $jwtEncoder, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
 
-                // Obtener el usuario autenticado
-            $user = $security->getUser();
-            if (!$user) {
+            // Obtener el token JWT de la cabecera Authorization
+            $authHeader = $request->headers->get('Authorization');
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return new JsonResponse(['error' => 'Token no proporcionado'], 401);
+            }
+            
+            // Extraer el token (sin la palabra "Bearer ")
+            $token = substr($authHeader, 7);
+
+            try {
+                // Decodificar el token JWT
+                $decodedToken = $jwtEncoder->decode($token);
+            } catch (\Exception $e) {
                 return new JsonResponse(['error' => 'Unauthorized'], 401);
             }
 
-                // Buscar la education en la base de datos por su id
+            // Obtener el ID del usuario desde el token
+            $userIdFromToken = $decodedToken['id'];
+            
+            // Buscar la education en la base de datos por su id
             $education = $educationRepository->find($id);
+
+            // Buscar el portfolio en la base de datos por su id
+            $portfolio = $education->getPortfolio();
+
+            // Buscar el usuario en la base de datos por su ID
+            $user = $portfolio->getUser();
+
+            // Asegurarse de que el usuario existe
+            if (!$user) {
+                return new JsonResponse(['error' => 'Usuario no encontrado'], 404);
+            }
+
+            // Verificar que el ID del token coincide con el ID del usuario que se va a editar
+            if ($user->getId() !== $userIdFromToken) {
+                return new JsonResponse(['error' => 'No tienes permisos para editar este usuario'], 403);
+            }
 
             $education->setTitle($data['title']);
             $education->setDate($data['date']);
@@ -275,19 +395,48 @@ use Symfony\Component\String\Slugger\SluggerInterface;
         }
 
         #[Route('/{id}/delete/education', name: 'app_api_delete_education', methods: ["DELETE"])]
-        public function deleteEducation(Request $request, Education $education, EducationRepository $educationRepository, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        public function deleteEducation(Request $request, Education $education, EducationRepository $educationRepository, ManagerRegistry $doctrine, JWTEncoderInterface $jwtEncoder, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
 
-                // Obtener el usuario autenticado
-            $user = $security->getUser();
-            if (!$user) {
+            // Obtener el token JWT de la cabecera Authorization
+            $authHeader = $request->headers->get('Authorization');
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return new JsonResponse(['error' => 'Token no proporcionado'], 401);
+            }
+            
+            // Extraer el token (sin la palabra "Bearer ")
+            $token = substr($authHeader, 7);
+
+            try {
+                // Decodificar el token JWT
+                $decodedToken = $jwtEncoder->decode($token);
+            } catch (\Exception $e) {
                 return new JsonResponse(['error' => 'Unauthorized'], 401);
             }
 
-                // Buscar la education en la base de datos por su id
+            // Obtener el ID del usuario desde el token
+            $userIdFromToken = $decodedToken['id'];
+            
+            // Buscar la education en la base de datos por su id
             $education = $educationRepository->find($id);
+
+            // Buscar el portfolio en la base de datos por su id
+            $portfolio = $education->getPortfolio();
+
+            // Buscar el usuario en la base de datos por su ID
+            $user = $portfolio->getUser();
+
+            // Asegurarse de que el usuario existe
+            if (!$user) {
+                return new JsonResponse(['error' => 'Usuario no encontrado'], 404);
+            }
+
+            // Verificar que el ID del token coincide con el ID del usuario que se va a editar
+            if ($user->getId() !== $userIdFromToken) {
+                return new JsonResponse(['error' => 'No tienes permisos para editar este usuario'], 403);
+            }
 
                 // Eliminar la entidad Education
             $entityManager->remove($education);
@@ -300,19 +449,45 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 // Metodos para la experience
 
         #[Route('/{id}/experience', name: 'app_api_experience', methods: ["POST"])]
-        public function newExperience(Request $request, Security $security, PortfolioRepository $portfolioRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, int $id): JsonResponse
+        public function newExperience(Request $request, JWTEncoderInterface $jwtEncoder, PortfolioRepository $portfolioRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
 
-            // Obtener el usuario autenticado
-            $user = $security->getUser();
-            if (!$user) {
+            // Obtener el token JWT de la cabecera Authorization
+            $authHeader = $request->headers->get('Authorization');
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return new JsonResponse(['error' => 'Token no proporcionado'], 401);
+            }
+            
+            // Extraer el token (sin la palabra "Bearer ")
+            $token = substr($authHeader, 7);
+
+            try {
+                // Decodificar el token JWT
+                $decodedToken = $jwtEncoder->decode($token);
+            } catch (\Exception $e) {
                 return new JsonResponse(['error' => 'Unauthorized'], 401);
             }
 
-                // Buscar el portfolio en la base de datos por su id
+            // Obtener el ID del usuario desde el token
+            $userIdFromToken = $decodedToken['id'];
+
+            // Buscar el portfolio en la base de datos por su id
             $portfolio = $portfolioRepository->find($id);
+
+            // Buscar el usuario en la base de datos por su ID
+            $user = $portfolio->getUser();
+
+            // Asegurarse de que el usuario existe
+            if (!$user) {
+                return new JsonResponse(['error' => 'Usuario no encontrado'], 404);
+            }
+
+            // Verificar que el ID del token coincide con el ID del usuario que se va a editar
+            if ($user->getId() !== $userIdFromToken) {
+                return new JsonResponse(['error' => 'No tienes permisos para editar este usuario'], 403);
+            }
 
                     // Crear una nueva instancia de Experience
             $experience = new Experience();
@@ -332,19 +507,48 @@ use Symfony\Component\String\Slugger\SluggerInterface;
         }
 
         #[Route('/{id}/edit/experience', name: 'app_api_edit_experience', methods: ["PUT"])]
-        public function editExperience(Request $request, Experience $experience, ExperienceRepository $experienceRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        public function editExperience(Request $request, Experience $experience, ExperienceRepository $experienceRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, JWTEncoderInterface $jwtEncoder, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
 
-                // Obtener el usuario autenticado
-            $user = $security->getUser();
-            if (!$user) {
+            // Obtener el token JWT de la cabecera Authorization
+            $authHeader = $request->headers->get('Authorization');
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return new JsonResponse(['error' => 'Token no proporcionado'], 401);
+            }
+            
+            // Extraer el token (sin la palabra "Bearer ")
+            $token = substr($authHeader, 7);
+
+            try {
+                // Decodificar el token JWT
+                $decodedToken = $jwtEncoder->decode($token);
+            } catch (\Exception $e) {
                 return new JsonResponse(['error' => 'Unauthorized'], 401);
             }
 
-                // Buscar la experience en la base de datos por su id
+            // Obtener el ID del usuario desde el token
+            $userIdFromToken = $decodedToken['id'];
+            
+            // Buscar la experience en la base de datos por su id
             $experience = $experienceRepository->find($id);
+
+            // Buscar el portfolio en la base de datos por su id
+            $portfolio = $experience->getPortfolio();
+
+            // Buscar el usuario en la base de datos por su ID
+            $user = $portfolio->getUser();
+
+            // Asegurarse de que el usuario existe
+            if (!$user) {
+                return new JsonResponse(['error' => 'Usuario no encontrado'], 404);
+            }
+
+            // Verificar que el ID del token coincide con el ID del usuario que se va a editar
+            if ($user->getId() !== $userIdFromToken) {
+                return new JsonResponse(['error' => 'No tienes permisos para editar este usuario'], 403);
+            }
 
             $experience->setTitle($data['title']);
             $experience->setDate($data['date']);
@@ -359,19 +563,48 @@ use Symfony\Component\String\Slugger\SluggerInterface;
         }
 
         #[Route('/{id}/delete/experience', name: 'app_api_delete_experience', methods: ["DELETE"])]
-        public function deleteExperience(Request $request, Experience $experience, ExperienceRepository $experienceRepository, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        public function deleteExperience(Request $request, Experience $experience, ExperienceRepository $experienceRepository, ManagerRegistry $doctrine, JWTEncoderInterface $jwtEncoder, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
 
-                // Obtener el usuario autenticado
-            $user = $security->getUser();
-            if (!$user) {
+            // Obtener el token JWT de la cabecera Authorization
+            $authHeader = $request->headers->get('Authorization');
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return new JsonResponse(['error' => 'Token no proporcionado'], 401);
+            }
+            
+            // Extraer el token (sin la palabra "Bearer ")
+            $token = substr($authHeader, 7);
+
+            try {
+                // Decodificar el token JWT
+                $decodedToken = $jwtEncoder->decode($token);
+            } catch (\Exception $e) {
                 return new JsonResponse(['error' => 'Unauthorized'], 401);
             }
 
-                // Buscar la experience en la base de datos por su id
+            // Obtener el ID del usuario desde el token
+            $userIdFromToken = $decodedToken['id'];
+            
+            // Buscar la experience en la base de datos por su id
             $experience = $experienceRepository->find($id);
+
+            // Buscar el portfolio en la base de datos por su id
+            $portfolio = $experience->getPortfolio();
+
+            // Buscar el usuario en la base de datos por su ID
+            $user = $portfolio->getUser();
+
+            // Asegurarse de que el usuario existe
+            if (!$user) {
+                return new JsonResponse(['error' => 'Usuario no encontrado'], 404);
+            }
+
+            // Verificar que el ID del token coincide con el ID del usuario que se va a editar
+            if ($user->getId() !== $userIdFromToken) {
+                return new JsonResponse(['error' => 'No tienes permisos para editar este usuario'], 403);
+            }
 
                 // Eliminar la entidad experience
             $entityManager->remove($experience);
@@ -384,19 +617,45 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 // Metodos para los project
 
         #[Route('/{id}/project', name: 'app_api_project', methods: ["POST"])]
-        public function newProject(Request $request, Security $security, PortfolioRepository $portfolioRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, int $id): JsonResponse
+        public function newProject(Request $request, JWTEncoderInterface $jwtEncoder, PortfolioRepository $portfolioRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
 
-            // Obtener el usuario autenticado
-            $user = $security->getUser();
-            if (!$user) {
+            // Obtener el token JWT de la cabecera Authorization
+            $authHeader = $request->headers->get('Authorization');
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return new JsonResponse(['error' => 'Token no proporcionado'], 401);
+            }
+            
+            // Extraer el token (sin la palabra "Bearer ")
+            $token = substr($authHeader, 7);
+
+            try {
+                // Decodificar el token JWT
+                $decodedToken = $jwtEncoder->decode($token);
+            } catch (\Exception $e) {
                 return new JsonResponse(['error' => 'Unauthorized'], 401);
             }
 
-                // Buscar el portfolio en la base de datos por su id
+            // Obtener el ID del usuario desde el token
+            $userIdFromToken = $decodedToken['id'];
+
+            // Buscar el portfolio en la base de datos por su id
             $portfolio = $portfolioRepository->find($id);
+
+            // Buscar el usuario en la base de datos por su ID
+            $user = $portfolio->getUser();
+
+            // Asegurarse de que el usuario existe
+            if (!$user) {
+                return new JsonResponse(['error' => 'Usuario no encontrado'], 404);
+            }
+
+            // Verificar que el ID del token coincide con el ID del usuario que se va a editar
+            if ($user->getId() !== $userIdFromToken) {
+                return new JsonResponse(['error' => 'No tienes permisos para editar este usuario'], 403);
+            }
 
                     // Crear una nueva instancia de Project
             $project = new Project();
@@ -416,19 +675,48 @@ use Symfony\Component\String\Slugger\SluggerInterface;
         }
 
         #[Route('/{id}/edit/project', name: 'app_api_edit_project', methods: ["PUT"])]
-        public function editProject(Request $request, Project $project, ProjectRepository $projectRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        public function editProject(Request $request, Project $project, ProjectRepository $projectRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, JWTEncoderInterface $jwtEncoder, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
 
-                // Obtener el usuario autenticado
-            $user = $security->getUser();
-            if (!$user) {
+            // Obtener el token JWT de la cabecera Authorization
+            $authHeader = $request->headers->get('Authorization');
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return new JsonResponse(['error' => 'Token no proporcionado'], 401);
+            }
+            
+            // Extraer el token (sin la palabra "Bearer ")
+            $token = substr($authHeader, 7);
+
+            try {
+                // Decodificar el token JWT
+                $decodedToken = $jwtEncoder->decode($token);
+            } catch (\Exception $e) {
                 return new JsonResponse(['error' => 'Unauthorized'], 401);
             }
 
-                // Buscar el project en la base de datos por su id
+            // Obtener el ID del usuario desde el token
+            $userIdFromToken = $decodedToken['id'];
+            
+            // Buscar el project en la base de datos por su id
             $project = $projectRepository->find($id);
+
+            // Buscar el portfolio en la base de datos por su id
+            $portfolio = $project->getPortfolio();
+
+            // Buscar el usuario en la base de datos por su ID
+            $user = $portfolio->getUser();
+
+            // Asegurarse de que el usuario existe
+            if (!$user) {
+                return new JsonResponse(['error' => 'Usuario no encontrado'], 404);
+            }
+
+            // Verificar que el ID del token coincide con el ID del usuario que se va a editar
+            if ($user->getId() !== $userIdFromToken) {
+                return new JsonResponse(['error' => 'No tienes permisos para editar este usuario'], 403);
+            }
 
             $project->setTitle($data['title']);
             $project->setDescription($data['description']);
@@ -443,19 +731,48 @@ use Symfony\Component\String\Slugger\SluggerInterface;
         }
 
         #[Route('/{id}/delete/project', name: 'app_api_delete_project', methods: ["DELETE"])]
-        public function deleteProject(Request $request, Project $project, ProjectRepository $projectRepository, ManagerRegistry $doctrine, Security $security, int $id): JsonResponse
+        public function deleteProject(Request $request, Project $project, ProjectRepository $projectRepository, ManagerRegistry $doctrine, JWTEncoderInterface $jwtEncoder, int $id): JsonResponse
         {
             $entityManager = $doctrine->getManager();
             $data = json_decode($request->getContent(), true);
 
-                // Obtener el usuario autenticado
-            $user = $security->getUser();
-            if (!$user) {
+            // Obtener el token JWT de la cabecera Authorization
+            $authHeader = $request->headers->get('Authorization');
+            if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+                return new JsonResponse(['error' => 'Token no proporcionado'], 401);
+            }
+            
+            // Extraer el token (sin la palabra "Bearer ")
+            $token = substr($authHeader, 7);
+
+            try {
+                // Decodificar el token JWT
+                $decodedToken = $jwtEncoder->decode($token);
+            } catch (\Exception $e) {
                 return new JsonResponse(['error' => 'Unauthorized'], 401);
             }
 
-                // Buscar el project en la base de datos por su id
+            // Obtener el ID del usuario desde el token
+            $userIdFromToken = $decodedToken['id'];
+            
+            // Buscar el project en la base de datos por su id
             $project = $projectRepository->find($id);
+
+            // Buscar el portfolio en la base de datos por su id
+            $portfolio = $project->getPortfolio();
+
+            // Buscar el usuario en la base de datos por su ID
+            $user = $portfolio->getUser();
+
+            // Asegurarse de que el usuario existe
+            if (!$user) {
+                return new JsonResponse(['error' => 'Usuario no encontrado'], 404);
+            }
+
+            // Verificar que el ID del token coincide con el ID del usuario que se va a editar
+            if ($user->getId() !== $userIdFromToken) {
+                return new JsonResponse(['error' => 'No tienes permisos para editar este usuario'], 403);
+            }
 
                 // Eliminar la entidad project
             $entityManager->remove($project);
