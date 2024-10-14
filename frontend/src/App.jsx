@@ -1,11 +1,12 @@
 import reactLogo from './assets/react.svg'
+import { Routing } from './route/Routing'
 import viteLogo from '/vite.svg'
 
 function App() {
   
   return (
     <>
-      <h1>hola</h1>
+      <Routing />
     </>
   )
 }
