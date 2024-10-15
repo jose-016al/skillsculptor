@@ -34,7 +34,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
         public function users(UserRepository $userRepository, Apiformatter $apiFormatter): JsonResponse
         {
             
-            $users = $userRepository->findAllExceptAdmins();
+            $users = $userRepository->findAll();
 
             $formattedUsers = [];
 
@@ -113,6 +113,17 @@ use Symfony\Component\String\Slugger\SluggerInterface;
             // Devolver los datos del usuario y el token en formato JSON
             $userJSON = $apiFormatter->users($user);
             return new JsonResponse(['user' => $userJSON, 'token' => $token], 200);
+        }
+
+        #[Route('/{id}/profile', name: 'app_api_profile', methods:["GET"])]
+        public function profile(User $user, UserRepository $userRepository, Apiformatter $apiFormatter, int $id): JsonResponse
+        {
+            // Buscar el usuario en la base de datos por su ID
+            $user = $userRepository->find($id);
+
+                // Devolver una respuesta al cliente React
+            $userJSON = $apiFormatter->users($user);
+            return new JsonResponse($userJSON, 200);
         }
             
         #[Route('/{id}/edit/user', name: 'app_api_edit_user', methods: ["PUT"])]
