@@ -1,63 +1,98 @@
 import React, { useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { Global } from '../../../helpers/Global';
 import { ApiRequests } from '../../../helpers/ApiRequests';
+import { useAuth } from '../../../hooks/useAuth';
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
-export const Login = ({ onUserChange }) => {
- 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [isRegistered, setIsRegistered] = useState(false);
-    const [errorMessageEmail, setErrorMessageEmail] = useState("");
-    const [errorMessagePassword, setErrorMessagePassword] = useState("");
+const validationSchema = Yup.object().shape({
+    email: Yup.string()
+        .email("El correo electrónico no es válido")
+        .required("El correo electrónico es obligatorio"),
+    password: Yup.string().required("La contraseña es obligatoria")
+});
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        const user = { email, password };
+export const Login = () => {
+    
+    const { setAuth, loading } = useAuth();
+    const navigate = useNavigate();
+    const [serverError, setServerError] = useState("");
+
+    const formik = useFormik({
+        initialValues: {
+            email: "",
+            password: ""
+        },
+        validationSchema,
+        onSubmit: values => {
+            loginUser(values)
+        }
+    });
+
+    const loginUser = async (form) => {
+        setServerError("");
+        let user = form;
+        console.log(user);
         try {
             const { data, status } = await ApiRequests(`${Global.url}login`, "POST", user);
             // Verifica si la respuesta es exitosa
             if (status === 200) {
                 console.log(data);
-            } else if (status === 402) {
-                console.log("No existe ninguna cuenta con este email");
+                /* Persistir datos en localStorage */
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("user", JSON.stringify(data.user));
+                /* Setear datos en el auth */
+                setAuth(data.user);
+                /* Redirrecion */
+                // navigate(`/profiles/${data.user.id}`);
             } else if (status === 401) {
-                console.log("Contraseña incorrecta");
+                setServerError("Contraseña incorrecta");
+            } else if (status === 404) {
+                setServerError("No existe ninguna cuenta con este email");
             }
         } catch (error) {
             console.error("Error en la solicitud", error);
+            setServerError("Error en la solicitud, intenta más tarde.");
         }
     }
     
-    if (isRegistered) {
-        return <Navigate to="/" replace={true} />;
-    }
-
     return (
         <>
-            <div className='container'>
-                <div className='row justify-content-center'>
-                    <h2 className='text-center mb-4 mt-4'>Login</h2>
-                    <form className='col-12 col-md-4' id='containerLogin' onSubmit={handleSubmit} >
-                        <div className="mb-2">
-                            <label className="form-label">Correo electronico</label>
-                            <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} />
-                            {errorMessageEmail && <div className="error text-danger">{errorMessageEmail}</div>}
-                        </div>
-                        <div className="mb-4">
-                            <label className="form-label">Password</label>
-                            <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} />
-                            {errorMessagePassword && <div className="error text-danger">{errorMessagePassword}</div>}
-                        </div>
-                        <div className="d-grid">
-                            <button id='btn-color' className="btn" type="submit">Iniciar sesion</button>
-                        </div>
-                        <div className="my-3">
-                            <span>¿No tienes cuenta? <Link to={`/Register`}>Crea tu cuenta</Link></span>
-                        </div>
-                    </form>
+            <div>
+                <div>
+                    <span>LOGIN</span>
                 </div>
+                <form onSubmit={formik.handleSubmit}>
+                    <div>
+                        <input type="email" name="email"
+                            value={formik.values.email}
+                            onChange={formik.handleChange} 
+                            placeholder="&nbsp;" />
+                        <label htmlFor="email">Correo electronico</label>
+                    </div>
+                    <div>
+                        {formik.errors.email && formik.touched.email ? formik.errors.email : ""}
+                    </div>
+                    <div>
+                        <input type="password" name="password"
+                            value={formik.values.password}
+                            onChange={formik.handleChange}
+                            placeholder="&nbsp;" />
+                        <label htmlFor="password">Contraseña</label>
+                    </div>
+                    <div>
+                        {formik.errors.password && formik.touched.password ? formik.errors.password : ""}
+                    </div>
+                    <div>
+                        {serverError && <p className="error">{serverError}</p>}
+                    </div>
+                    <div>
+                        <Link to="/register">Registro</Link>
+                        <input type="submit" value="Identificate" />
+                    </div>
+                </form>
             </div>
         </>
-    );
+    )
 }

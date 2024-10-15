@@ -9,9 +9,11 @@ export const AuthProvider = ({ children }) => {
 
     const [auth, setAuth] = useState({});
     const [loading, setLoading] = useState(true);
+    const [users, setUsers] = useState([]);
 
     useEffect(() => {
         authUser();
+        getUsers();
     }, []);
 
     const authUser = async () => {
@@ -24,29 +26,36 @@ export const AuthProvider = ({ children }) => {
             false;
             setLoading(false);
         } else {
-
             /* Transformar los datos a un objeto de javsscript */
             const userObjt = JSON.parse(user);
             const userId = userObjt.id;
     
             /* Peticion ajaz al backend que compruebe el token y que me devuleva todos los datos del usuario */
     
-            const request = await ApiRequests(`${Global.url}user/profile/${userId}`, "GET", undefined, false, token);
+            const request = await ApiRequests(`${Global.url}${userId}/profile`, "GET", undefined, false, token);
     
             const data = await request.data;
     
-            const requestCounters = await ApiRequests(`${Global.url}user/counters/${userId}`, "GET", undefined, false, token);
-    
-            const dataCounters = await requestCounters.data;
-    
             /* Setear el estado de auth */
-            setAuth(data.user);
+            setAuth(data);
             setLoading(false);
         }
     }
 
+    const getUsers = async () => {
+        try {
+            /* Peticion para sacar usuarios */
+            const { data, status } = await ApiRequests(`${Global.url}users`, "GET", undefined, false);
+            if (status === 200) {
+                setUsers(data);
+            } 
+        } catch (error) {
+            console.error("Error en la solicitud", error);
+        }
+    }
+
     return (
-        <AuthContext.Provider value={{ auth, setAuth, loading }}>
+        <AuthContext.Provider value={{ auth, setAuth, loading, users }}>
             {children}
         </AuthContext.Provider>
     )

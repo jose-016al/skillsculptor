@@ -14,7 +14,7 @@ export const ApiRequests = async (url, method, dataSave = "", file = false, toke
                 method: method,
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": token
+                    "Authorization": `Bearer ${token}`
                 }
             }   
         }
@@ -30,7 +30,7 @@ export const ApiRequests = async (url, method, dataSave = "", file = false, toke
                     method: method,
                     body: dataSave,
                     headers: {
-                        "Authorization": token
+                        "Authorization": `Bearer ${token}`
                     }
                 }   
             }
@@ -48,7 +48,7 @@ export const ApiRequests = async (url, method, dataSave = "", file = false, toke
                     body: JSON.stringify(dataSave),
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": token
+                        "Authorization": `Bearer ${token}`
                     }
                 }   
             }
