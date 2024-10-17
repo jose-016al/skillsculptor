@@ -20,7 +20,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -124,6 +125,22 @@ use Symfony\Component\String\Slugger\SluggerInterface;
                 // Devolver una respuesta al cliente React
             $userJSON = $apiFormatter->users($user);
             return new JsonResponse($userJSON, 200);
+        }
+
+        #[Route('/{id}/avatar', name: 'app_api_avatar', methods: ['GET'])]
+        public function avatar(UserRepository $userRepository, int $id): Response
+        {
+            // Buscar el usuario en la base de datos por su ID
+            $user = $userRepository->find($id);
+
+            // Obtener el nombre de la imagen del avatar
+            $imageFilename = $user->getImage();
+
+            // Construir la ruta completa de la imagen
+            $imagePath = $this->getParameter('imagen_directory') . '/' . $imageFilename;
+
+            // Devolver la imagen como respuesta
+            return new BinaryFileResponse($imagePath);
         }
             
         #[Route('/{id}/edit/user', name: 'app_api_edit_user', methods: ["PUT"])]
