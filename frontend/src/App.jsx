@@ -1,12 +1,12 @@
-import reactLogo from './assets/react.svg'
+import { ThemeMode } from './components/layout/ThemeMode'
 import { Routing } from './route/Routing'
-import viteLogo from '/vite.svg'
 
 function App() {
   
   return (
     <>
       <Routing />
+      <ThemeMode />
     </>
   )
 }
