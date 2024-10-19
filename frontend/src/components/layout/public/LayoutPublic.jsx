@@ -8,14 +8,12 @@ export const LayoutPublic = () => {
 
     return (
         <>
-            <div>
-                {/* LAYOUT */}
-                {/* Contenido principal */}
-                <Nav />
-                <main>
-                    {!auth.id ? <Outlet /> : <Navigate to="/user" />}
-                </main>
-            </div>
+            {/* LAYOUT */}
+            {/* Contenido principal */}
+            <Nav />
+            <main className='container mx-auto'>
+                {!auth.id ? <Outlet /> : <Navigate to="/user" />}
+            </main>
         </>
     )
 }

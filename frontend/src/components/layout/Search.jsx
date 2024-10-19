@@ -6,14 +6,6 @@ export const Search = () => {
 
     // Manejar Ctrl+K para abrir el modal
     useEffect(() => {
-        // Seleccionar el botón de cierre
-        const closeButton = document.querySelector('.modal-close-button');
-
-        // Si el modal está abierto, ocultamos el botón de cierre
-        if (openModal && closeButton) {
-            closeButton.style.display = 'none';
-        }
-
         const handleKeyDown = (event) => {
             if (event.ctrlKey && event.key === 'k') {
                 event.preventDefault();

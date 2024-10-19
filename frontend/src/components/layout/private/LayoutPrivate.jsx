@@ -9,14 +9,12 @@ export const LayoutPrivate = () => {
 
     return (
         <>
-            <div>
-                {/* LAYOUT */}
-                {/* Contenido principal */}
-                <Nav />
-                <main>
-                    {auth.id ? <Outlet /> : <Navigate to="/" />}
-                </main>
-            </div>
+            {/* LAYOUT */}
+            {/* Contenido principal */}
+            <Nav />
+            <main>
+                {auth.id ? <Outlet /> : <Navigate to="/" />}
+            </main>
         </>
     )
 }

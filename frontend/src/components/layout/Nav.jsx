@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search } from './Search';
 import { Global } from '../../helpers/Global';
 import { useAuth } from '../../hooks/useAuth';
 import { FaChevronDown } from "react-icons/fa";
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, useLocation, useParams } from 'react-router-dom';
 
 export const Nav = () => {
-
   const { auth } = useAuth();
   const { userid } = useParams();
+  const location = useLocation();
   const [openMenu, setOpenMenu] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
 
@@ -19,6 +19,10 @@ export const Nav = () => {
   const toggleDropdown = () => {
     setOpenDropdown(!openDropdown);
   };
+
+  useEffect(() => {
+    setOpenMenu(false); // Cierra el menú cuando la ubicación cambia
+  }, [location]);
 
   return (
     <nav className="z-20 bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700" id='nav'>
@@ -38,18 +42,17 @@ export const Nav = () => {
         </button>
 
         {/* Menú y componente de búsqueda alineados con flex */}
-        <div className={`mt-2 md:mt-0 md:flex flex-wrap items-center justify-between  ${openMenu ? 'block' : 'hidden'} w-full md:w-auto`} id="menu">
+        <div className={`mt-2 md:mt-0 md:flex flex-wrap items-center justify-between ${openMenu ? 'block' : 'hidden'} w-full md:w-auto`} id="menu">
           {/* Componente Search alineado con el menú */}
           <div className="mx-4">
             <Search />
           </div>
 
           {/* Menú */}
-          {/* flex flex-col md:flex-row md:space-x-8 font-medium p-4 md:p-0 mt-4 md:mt-0 border border-gray-100 rounded-lg bg-gray-50 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700 */}
-          <ul className="flex md:items-center flex-col font-medium p-4 md:p-0 mt-4 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 ">
+          <ul className="flex flex-col md:items-center font-medium p-4 md:p-0 mt-4 custom-ul md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0">
             {auth.id && (
               <li className="relative">
-                <button id="dropdownNavbarLink" type="button" className="w-full flex items-center space-x-2 text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom"
+                <button id="dropdownNavbarLink" type="button" className="w-full flex items-center space-x-2 text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="user-dropdown"
                   onClick={toggleDropdown}>
                   <img className="w-8 h-8 rounded-full" src={`${Global.url}${auth.id}/avatar`} alt="user photo" />
                   <span>{auth.name}</span>
@@ -57,7 +60,7 @@ export const Nav = () => {
                 </button>
                 <div id="dropdownNavbar"
                   className={`${openDropdown ? 'block' : 'hidden'} absolute left-0 right-0 z-10 font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600`}>
-                  <ul className=" py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
+                  <ul className="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
                     {auth.id && auth.roles.includes("ROLE_ADMIN") &&
                       <li className='block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white'>
                         <a href="http://localhost:300/" target="_blank" rel="noopener noreferrer">
@@ -90,60 +93,60 @@ export const Nav = () => {
             {auth.id ?
               userid ?
                 <li>
-                  <NavLink to={`/profiles/${userid}`} className={({ isActive }) =>
+                  <NavLink id='link' to={`/profiles/${userid}`} className={({ isActive }) =>
                     isActive
-                      ? 'text-blue-500 font-bold'
-                      : 'text-gray-300 hover:text-white'
+                      ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
+                      : 'text-white-100 block py-2 px-3 md:p-0'
                   }>
-                    <span>Home</span>
+                    Home
                   </NavLink>
                 </li>
                 :
                 <li>
-                  <NavLink to={`/profiles/${auth.id}`} className={({ isActive }) =>
+                  <NavLink id='link' to={`/profiles/${auth.id}`} className={({ isActive }) =>
                     isActive
-                      ? 'text-blue-500 font-bold'
-                      : 'text-gray-300 hover:text-white'
+                      ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
+                      : 'text-white-100 block py-2 px-3 md:p-0'
                   }>
-                    <span>Home</span>
+                    Home
                   </NavLink>
                 </li>
               :
               <>
                 <li>
-                  <NavLink to={`/`} className={({ isActive }) =>
+                  <NavLink id='link' to={`/`} className={({ isActive }) =>
                     isActive
-                      ? 'text-blue-500 font-bold'
-                      : 'text-gray-300 hover:text-white'
+                      ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
+                      : 'text-white-100 block py-2 px-3 md:p-0'
                   }>
-                    <span>Home</span>
+                    Home
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to={`/`} className={({ isActive }) =>
+                  <NavLink id='link' to={`/`} className={({ isActive }) =>
                     isActive
-                      ? 'text-blue-500 font-bold'
-                      : 'text-gray-300 hover:text-white'
+                      ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
+                      : 'text-white-100 block py-2 px-3 md:p-0'
                   }>
-                    <span>Educación</span>
+                    Educación
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to={`/`} className={({ isActive }) =>
+                  <NavLink id='link' to={`/`} className={({ isActive }) =>
                     isActive
-                      ? 'text-blue-500 font-bold'
-                      : 'text-gray-300 hover:text-white'
+                      ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
+                      : 'text-white-100 block py-2 px-3 md:p-0'
                   }>
-                    <span>Experiencia</span>
+                    Experiencia
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to={`/`} className={({ isActive }) =>
+                  <NavLink id='link' to={`/`} className={({ isActive }) =>
                     isActive
-                      ? 'text-blue-500 font-bold'
-                      : 'text-gray-300 hover:text-white'
+                      ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
+                      : 'text-white-100 block py-2 px-3 md:p-0'
                   }>
-                    <span>Proyectos</span>
+                    Proyectos
                   </NavLink>
                 </li>
               </>
