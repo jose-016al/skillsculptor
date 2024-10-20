@@ -8,6 +8,10 @@ body {
     @apply bg-white text-black dark:bg-gray-900 dark:text-white;
 }
   
+main {
+    margin-top: 100px;
+}
+
 #alert {
     position: fixed;
     top: 0;
@@ -117,6 +121,11 @@ body {
 
 #forms {
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+#buttonNav span {
+    /* width: 100%; */
+    background-color: red;
 }
 
 @media (min-width: 768px) {

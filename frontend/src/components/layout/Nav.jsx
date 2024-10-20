@@ -4,6 +4,9 @@ import { Global } from '../../helpers/Global';
 import { useAuth } from '../../hooks/useAuth';
 import { FaChevronDown } from "react-icons/fa";
 import { NavLink, useLocation, useParams } from 'react-router-dom';
+import { useClickAway } from "@uidotdev/usehooks";
+import { TiThMenu } from "react-icons/ti";
+import { IoCloseSharp } from "react-icons/io5";
 
 export const Nav = () => {
   const { auth } = useAuth();
@@ -12,12 +15,17 @@ export const Nav = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
 
-  const changeOpenMenu = () => {
-    setOpenMenu(!openMenu);
+  const ref = useClickAway(() => {
+    setOpenMenu(false);
+    setOpenDropdown(false);
+  });
+
+  const handleOpenNavUser = () => {
+    setOpenDropdown(!openDropdown);
   };
 
-  const toggleDropdown = () => {
-    setOpenDropdown(!openDropdown);
+  const handleToggleMenu = () => {
+    setOpenMenu(prev => !prev); // Alternar el estado del menú
   };
 
   useEffect(() => {
@@ -26,19 +34,21 @@ export const Nav = () => {
 
   return (
     <nav className="z-20 bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700" id='nav'>
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        {/* Título alineado a la izquierda */}
-        <a href="#" className="flex items-center space-x-3 rtl:space-x-reverse">
+      <div ref={ref} className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <NavLink className="flex items-center space-x-3 rtl:space-x-reverse"
+          to={`/`}>
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SkillsCulptor</span>
-        </a>
+        </NavLink>
 
         {/* Botón de menú para pantallas pequeñas */}
-        <button data-collapse-toggle="navbar-dropdown" type="button" className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-dropdown"
+        <button
+          type="button"
+          className="inline-flex items-center p-2 justify-center text-lg text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+          aria-controls="navbar-dropdown"
           aria-expanded={openMenu}
-          onClick={changeOpenMenu}>
-          <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h15M1 7h15M1 13h15" />
-          </svg>
+          onClick={handleToggleMenu}
+        >
+          {openMenu ? <IoCloseSharp /> : <TiThMenu />}
         </button>
 
         {/* Menú y componente de búsqueda alineados con flex */}
@@ -53,7 +63,7 @@ export const Nav = () => {
             {auth.id && (
               <li className="relative">
                 <button id="dropdownNavbarLink" type="button" className="w-full flex items-center space-x-2 text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="user-dropdown"
-                  onClick={toggleDropdown}>
+                  onClick={handleOpenNavUser}>
                   <img className="w-8 h-8 rounded-full" src={`${Global.url}${auth.id}/avatar`} alt="user photo" />
                   <span>{auth.name}</span>
                   <FaChevronDown />
@@ -90,31 +100,10 @@ export const Nav = () => {
                 </div>
               </li>
             )}
-            {auth.id ?
-              userid ?
-                <li>
-                  <NavLink id='link' to={`/profiles/${userid}`} className={({ isActive }) =>
-                    isActive
-                      ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
-                      : 'text-white-100 block py-2 px-3 md:p-0'
-                  }>
-                    Home
-                  </NavLink>
-                </li>
-                :
-                <li>
-                  <NavLink id='link' to={`/profiles/${auth.id}`} className={({ isActive }) =>
-                    isActive
-                      ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
-                      : 'text-white-100 block py-2 px-3 md:p-0'
-                  }>
-                    Home
-                  </NavLink>
-                </li>
-              :
+            {userid ?
               <>
                 <li>
-                  <NavLink id='link' to={`/`} className={({ isActive }) =>
+                  <NavLink id='link' to={`/profiles/home/${userid}`} className={({ isActive }) =>
                     isActive
                       ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
                       : 'text-white-100 block py-2 px-3 md:p-0'
@@ -123,7 +112,7 @@ export const Nav = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink id='link' to={`/`} className={({ isActive }) =>
+                  <NavLink id='link' to={`/profiles/education/${userid}`} className={({ isActive }) =>
                     isActive
                       ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
                       : 'text-white-100 block py-2 px-3 md:p-0'
@@ -132,7 +121,7 @@ export const Nav = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink id='link' to={`/`} className={({ isActive }) =>
+                  <NavLink id='link' to={`/profiles/experience/${userid}`} className={({ isActive }) =>
                     isActive
                       ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
                       : 'text-white-100 block py-2 px-3 md:p-0'
@@ -141,7 +130,7 @@ export const Nav = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink id='link' to={`/`} className={({ isActive }) =>
+                  <NavLink id='link' to={`/profiles/project/${userid}`} className={({ isActive }) =>
                     isActive
                       ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
                       : 'text-white-100 block py-2 px-3 md:p-0'
@@ -150,7 +139,87 @@ export const Nav = () => {
                   </NavLink>
                 </li>
               </>
+              :
+              auth.id ?
+                <>
+                  <li>
+                    <NavLink id='link' to={`/profiles/home`} className={({ isActive }) =>
+                      isActive
+                        ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
+                        : 'text-white-100 block py-2 px-3 md:p-0'
+                    }>
+                      Home
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink id='link' to={`/profiles/education`} className={({ isActive }) =>
+                      isActive
+                        ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
+                        : 'text-white-100 block py-2 px-3 md:p-0'
+                    }>
+                      Educación
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink id='link' to={`/profiles/experience`} className={({ isActive }) =>
+                      isActive
+                        ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
+                        : 'text-white-100 block py-2 px-3 md:p-0'
+                    }>
+                      Experiencia
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink id='link' to={`/profiles/project`} className={({ isActive }) =>
+                      isActive
+                        ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
+                        : 'text-white-100 block py-2 px-3 md:p-0'
+                    }>
+                      Proyectos
+                    </NavLink>
+                  </li>
+                </>
+                :
+                <>
+                  <li>
+                    <NavLink id='link' to={`/`} className={({ isActive }) =>
+                      isActive
+                        ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
+                        : 'text-white-100 block py-2 px-3 md:p-0'
+                    }>
+                      Home
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink id='link' to={`/education`} className={({ isActive }) =>
+                      isActive
+                        ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
+                        : 'text-white-100 block py-2 px-3 md:p-0'
+                    }>
+                      Educación
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink id='link' to={`/experience`} className={({ isActive }) =>
+                      isActive
+                        ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
+                        : 'text-white-100 block py-2 px-3 md:p-0'
+                    }>
+                      Experiencia
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink id='link' to={`/project`} className={({ isActive }) =>
+                      isActive
+                        ? 'text-blue-500 font-bold block py-2 px-3 md:p-0'
+                        : 'text-white-100 block py-2 px-3 md:p-0'
+                    }>
+                      Proyectos
+                    </NavLink>
+                  </li>
+                </>
             }
+
             {!auth.id && (
               <NavLink to="/login" className="p-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                 Login

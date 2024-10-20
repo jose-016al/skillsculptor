@@ -3,7 +3,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useParams } from 'react-router-dom';
 import { useProfile } from '../../../hooks/useProfile';
 
-export const Home = () => {
+export const Project = () => {
 
   const { userid } = useParams();
   const {auth} = useAuth();
