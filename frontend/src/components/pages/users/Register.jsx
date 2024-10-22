@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Link, Navigate, NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Global } from '../../../helpers/Global';
 import { ApiRequests } from '../../../helpers/ApiRequests';
-import { useAuth } from '../../../hooks/useAuth';
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Alert } from '../../layout/Alert';
@@ -28,10 +27,11 @@ const validationSchema = Yup.object().shape({
 });
 
 export const Register = () => {
-  const { setAuth, loading } = useAuth();
+
   const navigate = useNavigate();
   const [serverError, setServerError] = useState("");
   const [statusError, setStatusError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -44,6 +44,7 @@ export const Register = () => {
     },
     validationSchema,
     onSubmit: values => {
+      setLoading(true);
       signup(values);
     }
   });
@@ -53,24 +54,24 @@ export const Register = () => {
     setStatusError("");
     let user = form;
     try {
-      const { data, status } = await ApiRequests(`${Global.url}register`, "POST", user);
-      console.log(data, status);
+      const { status } = await ApiRequests(`${Global.url}register`, "POST", user);
       if (status === 201) {
-        console.log("redirige");
         navigate('/login');
       } else if (status === 400) {
         setServerError("El usuario ya existe");
         setStatusError("error");
+        setLoading(false);
       }
     } catch (error) {
       setServerError("Error en la solicitud, intenta más tarde.");
       setStatusError("warning");
+      setLoading(false);
     }
   };
 
   return (
     <div id='registerlayout' className="flex flex-col md:flex-row items-center px-3">
-      <div  className="md:w-1/2 w-full hidden md:flex justify-center items-center px-5">
+      <div className="md:w-1/2 w-full hidden md:flex justify-center items-center px-5">
         <img
           src={illustration}
           className="max-w-full h-auto md:max-w-lg lg:max-w-xl xl:max-w-2xl object-contain"
@@ -79,8 +80,13 @@ export const Register = () => {
       </div>
 
       <div className="md:w-1/2 w-full ">
-        <form id='forms' className="py-4 px-5 max-w-lg mx-auto border border-gray-100 rounded-lg bg-gray-100 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700" onSubmit={formik.handleSubmit}>
+        <form id='forms' className="relative py-4 px-5 max-w-lg mx-auto border border-gray-100 rounded-lg bg-gray-100 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700" onSubmit={formik.handleSubmit}>
           <h1 className="text-center text-2xl font-semibold mb-4">Registro</h1>
+          {loading &&
+            <div id='container-loader' className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-10">
+              <div className="loader"></div>
+            </div>
+          }
           <div className='flex flex-col md:flex-row justify-center' id='inputsregister'>
             <div>
               <div>

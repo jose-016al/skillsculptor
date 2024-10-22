@@ -62,14 +62,14 @@ export const Nav = () => {
           <ul className="flex flex-col md:items-center font-medium p-4 md:p-0 mt-4 custom-ul md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0">
             {auth.id && (
               <li className="relative">
-                <button id="dropdownNavbarLink" type="button" className="w-full flex items-center space-x-2 text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="user-dropdown"
+                <button id="dropdownNavbarLink" type="button" className="w-full flex items-center space-x-2 px-2 text-sm bg-whiite-100 dark:bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="user-dropdown"
                   onClick={handleOpenNavUser}>
                   <img className="w-8 h-8 rounded-full" src={`${Global.url}${auth.id}/avatar`} alt="user photo" />
                   <span>{auth.name}</span>
                   <FaChevronDown />
                 </button>
                 <div id="dropdownNavbar"
-                  className={`${openDropdown ? 'block' : 'hidden'} absolute left-0 right-0 z-10 font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600`}>
+                  className={`${openDropdown ? 'block' : 'hidden'} z-10 font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600`}>
                   <ul className="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
                     {auth.id && auth.roles.includes("ROLE_ADMIN") &&
                       <li className='block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white'>

@@ -1,7 +1,5 @@
 export const ApiRequests = async (url, method, dataSave = "", file = false, token = "") => {
 
-    let loading = true;
-
     let options = {
         method: "GET"
     }
@@ -54,16 +52,16 @@ export const ApiRequests = async (url, method, dataSave = "", file = false, toke
             }
         }
     }
+
+    // await new Promise(resolve => setTimeout(resolve, 2000));
+
     const apirequests = await fetch(url, options);
         // Capturar el status de la respuesta
     const status = apirequests.status;
     const data = await apirequests.json();
 
-    loading = false;
-
     return {
         data,
-        status,
-        loading
+        status
     }
 }

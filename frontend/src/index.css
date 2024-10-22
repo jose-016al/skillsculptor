@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css?family=Fjalla+One');
 
 /* Estilos globales */
 
@@ -8,6 +9,75 @@ body {
     @apply bg-white text-black dark:bg-gray-900 dark:text-white;
 }
   
+/* Eror 404 */
+.container-404 {
+    display: block;
+    text-align: center;
+    margin-top: 5%;
+}
+.four1 {
+    animation: swing ease-in-out 1.5s infinite alternate;
+    display: inline-block;
+}
+.zero {
+    animation: swing2 ease-in-out 1.5s infinite alternate;
+    display: inline-block;
+}
+.four2 {
+    animation: swing3 ease-in-out 1.5s infinite alternate;
+    display: inline-block;
+}
+
+@keyframes swing {
+    0% { transform: rotate(3deg); }
+    100% { transform: rotate(-3deg); }
+}
+
+@keyframes swing2 {
+    0% { transform: rotate(-3deg); }
+    100% { transform: rotate(3deg); }
+}
+@keyframes swing3 {
+    0% { transform: rotate(-3deg); }
+    100% { transform: rotate(8deg); }
+}
+
+
+/* Loader */
+#container-loader {
+    backdrop-filter: blur(1px);
+}
+.loader {
+    width: 50px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 8px solid #3B82F6;
+    animation:
+      l20-1 0.8s infinite linear alternate,
+      l20-2 1.6s infinite linear;
+}
+@keyframes l20-1{
+    0%    {clip-path: polygon(50% 50%,0       0,  50%   0%,  50%    0%, 50%    0%, 50%    0%, 50%    0% )}
+    12.5% {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100%   0%, 100%   0%, 100%   0% )}
+    25%   {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100% 100%, 100% 100%, 100% 100% )}
+    50%   {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100% 100%, 50%  100%, 0%   100% )}
+    62.5% {clip-path: polygon(50% 50%,100%    0, 100%   0%,  100%   0%, 100% 100%, 50%  100%, 0%   100% )}
+    75%   {clip-path: polygon(50% 50%,100% 100%, 100% 100%,  100% 100%, 100% 100%, 50%  100%, 0%   100% )}
+    100%  {clip-path: polygon(50% 50%,50%  100%,  50% 100%,   50% 100%,  50% 100%, 50%  100%, 0%   100% )}
+}
+@keyframes l20-2{ 
+    0%    {transform:scaleY(1)  rotate(0deg)}
+    49.99%{transform:scaleY(1)  rotate(135deg)}
+    50%   {transform:scaleY(-1) rotate(0deg)}
+    100%  {transform:scaleY(-1) rotate(-135deg)}
+}
+
+
+
+
+
+
+
 main {
     margin-top: 100px;
 }
@@ -128,7 +198,19 @@ main {
     background-color: red;
 }
 
+#dropdownNavbar {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30%;
+}
+
 @media (min-width: 768px) {
+    #dropdownNavbar {
+        left: 0; 
+        transform: none;
+        width: 100%;
+    }
     .custom-ul-light {
         background-color: transparent;
         border: none;

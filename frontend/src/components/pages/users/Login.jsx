@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState } from 'react';
 import { Link, Navigate, NavLink, useNavigate } from 'react-router-dom';
 import { Global } from '../../../helpers/Global';
 import { ApiRequests } from '../../../helpers/ApiRequests';
@@ -16,10 +16,11 @@ const validationSchema = Yup.object().shape({
 });
 
 export const Login = () => {
-    const { setAuth, loading } = useAuth();
+    const { setAuth } = useAuth();
     const navigate = useNavigate();
     const [serverError, setServerError] = useState("");
     const [statusError, setStatusError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const formik = useFormik({
         initialValues: {
@@ -28,6 +29,7 @@ export const Login = () => {
         },
         validationSchema,
         onSubmit: values => {
+            setLoading(true);
             signin(values);
         }
     });
@@ -42,25 +44,33 @@ export const Login = () => {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("user", JSON.stringify(data.user));
                 setAuth(data.user);
-                navigate(`/profiles/${data.user.id}`);
+                navigate(`/profiles/home/${data.user.id}`);
             } else if (status === 401) {
                 setServerError("Contraseña incorrecta");
                 setStatusError("error");
+                setLoading(false);
             } else if (status === 404) {
                 setServerError("No existe ninguna cuenta con este email");
                 setStatusError("error");
+                setLoading(false);
             }
         } catch (error) {
             setServerError("Error en la solicitud, intenta más tarde.");
             setStatusError("warning");
+            setLoading(false);
         }
     };
 
     return (
         <div id='loginlayout' className="flex flex-col md:flex-row items-center h-screen px-3">
-            <div className="md:w-1/2 w-full ">
-                <form id='forms' className="py-4 px-5 max-w-sm mx-auto border border-gray-100 rounded-lg bg-gray-100 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700" onSubmit={formik.handleSubmit}>
+            <div className="md:w-1/2 w-full">
+                <form id='forms' className="relative py-4 px-5 max-w-sm mx-auto border border-gray-100 rounded-lg bg-gray-100 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700" onSubmit={formik.handleSubmit}>
                     <h1 className="text-center text-2xl font-semibold mb-4">Login</h1>
+                    {loading &&
+                        <div id='container-loader' className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-10">
+                            <div className="loader"></div>
+                        </div>
+                    }
                     <div className="mb-5">
                         <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                             Correo electronico
@@ -109,11 +119,10 @@ export const Login = () => {
                             Identificate
                         </button>
                     </div>
-
                 </form>
             </div>
 
-            <div  className="md:w-1/2 w-full hidden md:flex justify-center items-center">
+            <div className="md:w-1/2 w-full hidden md:flex justify-center items-center">
                 <img
                     src={signinimage}
                     className="max-w-full h-auto md:max-w-lg lg:max-w-xl xl:max-w-2xl object-contain"

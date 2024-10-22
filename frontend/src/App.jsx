@@ -1,12 +1,13 @@
-import { ThemeMode } from './components/layout/ThemeMode'
+import { useTheme } from './hooks/useTheme'
 import { Routing } from './route/Routing'
 
 function App() {
+
+  useTheme();
   
   return (
     <>
       <Routing />
-      <ThemeMode />
     </>
   )
 }
