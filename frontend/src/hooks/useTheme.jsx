@@ -24,8 +24,6 @@ export const useTheme = () => {
             setSwitch1(false);
         }
 
-        console.log(customNavElement);
-
         // Guardar el tema actual en localStorage
         localStorage.setItem('theme', theme);
 

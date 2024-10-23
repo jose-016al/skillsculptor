@@ -11,7 +11,6 @@ export const Home = () => {
   const { auth } = useAuth();
 
   const { profile, loading } = useProfile(userid);
-  console.log(profile);
 
   return (
     <>
