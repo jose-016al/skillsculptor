@@ -137,7 +137,7 @@ class ApiController extends AbstractController
         $imageFilename = $user->getImage();
 
         // Construir la ruta completa de la imagen
-        $imagePath = $this->getParameter('imagen_directory') . '/' . $imageFilename;
+        $imagePath = $this->getParameter('avatars') . '/' . $imageFilename;
 
         // Devolver la imagen como respuesta
         return new BinaryFileResponse($imagePath);
@@ -241,7 +241,7 @@ class ApiController extends AbstractController
         try {
             // Mover el archivo a la carpeta designada
             $imageFile->move(
-                $this->getParameter('imagen_directory'), // Asegúrate de que esté definido en config/services.yaml
+                $this->getParameter('avatars'), // Asegúrate de que esté definido en config/services.yaml
                 $newFilename
             );
 
@@ -820,5 +820,94 @@ class ApiController extends AbstractController
 
         // Devolver una respuesta de éxito
         return new JsonResponse(['message' => 'Se ha eliminado un proyecto'], 204);
+    }
+
+    #[Route('/{id}/image', name: 'app_api_image_project', methods: ['GET'])]
+    public function showImageProject(ProjectRepository $projectRepository, int $id): Response
+    {
+        // Buscar el proyecto en la base de datos por su ID
+        $project = $projectRepository->find($id);
+
+        // Obtener el nombre de la imagen del proyecto
+        $imageFilename = $project->getImage();
+
+        // Construir la ruta completa de la imagen
+        $imagePath = $this->getParameter('images') . '/' . $imageFilename;
+
+        // Devolver la imagen como respuesta
+        return new BinaryFileResponse($imagePath);
+    }
+
+    #[Route('/project/{id}/upload', name: 'app_api_image_project_new', methods: ["POST"])]
+    public function uploadImageProject(Request $request, JWTEncoderInterface $jwtEncoder, ProjectRepository $projectRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, SluggerInterface $slugger, int $id): JsonResponse
+    {
+        $entityManager = $doctrine->getManager();
+
+        // Obtener el token JWT de la cabecera Authorization
+        $authHeader = $request->headers->get('Authorization');
+        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+            return new JsonResponse(['error' => 'Token no proporcionado'], 401);
+        }
+
+        // Extraer el token (sin la palabra "Bearer ")
+        $token = substr($authHeader, 7);
+
+        try {
+            // Decodificar el token JWT
+            $decodedToken = $jwtEncoder->decode($token);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Unauthorized'], 401);
+        }
+
+        // Obtener el ID del usuario desde el token
+        $userIdFromToken = $decodedToken['id'];
+
+        // Buscar el project en la base de datos por su id
+        $project = $projectRepository->find($id);
+
+        // Buscar el portfolio en la base de datos por su id
+        $portfolio = $project->getPortfolio();
+
+        // Buscar el usuario en la base de datos por su ID
+        $user = $portfolio->getUser();
+
+        // Asegurarse de que el usuario existe
+        if (!$user) {
+            return new JsonResponse(['error' => 'Usuario no encontrado'], 404);
+        }
+
+        // Verificar que el ID del token coincide con el ID del usuario que se va a editar
+        if ($user->getId() !== $userIdFromToken) {
+            return new JsonResponse(['error' => 'No tienes permisos para editar este usuario'], 403);
+        }
+
+        // Obtener el archivo de imagen desde el formulario
+        $imageFile = $request->files->get('image');
+
+        // Generar un nombre seguro para el archivo
+        $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeFilename = $slugger->slug($originalFilename);
+        $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+
+        try {
+            // Mover el archivo a la carpeta designada
+            $imageFile->move(
+                $this->getParameter('images'), // Asegúrate de que esté definido en config/services.yaml
+                $newFilename
+            );
+
+            // Asignar el nuevo nombre del archivo al usuario
+            $project->setImage($newFilename);
+
+            // Guardar los cambios del usuario en la base de datos
+            $entityManager->flush();
+
+            // Devolver una respuesta al cliente
+            $projectJSON = $apiFormatter->projects($project);
+            return new JsonResponse($projectJSON, 201);
+        } catch (FileException $e) {
+            // Manejar cualquier error durante la subida del archivo
+            return new JsonResponse(['error' => 'File upload failed'], 500);
+        }
     }
 }

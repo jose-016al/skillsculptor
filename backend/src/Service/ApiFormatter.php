@@ -73,6 +73,7 @@ class ApiFormatter
                 'description' => $project->getDescription(),
                 'demo' => $project->getDemo(),
                 'github' => $project->getGithub(),
+                'image' => $project->getImage(),
             ];
         }
 
@@ -129,6 +130,7 @@ class ApiFormatter
             'description' => $project->getDescription(),
             'demo' => $project->getDemo(),
             'github' => $project->getGithub(),
+            'image' => $project->getImage(),
         );
 
         return $projectJSON;

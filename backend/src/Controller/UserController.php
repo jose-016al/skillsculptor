@@ -46,7 +46,7 @@ final class UserController extends AbstractController
 
                 try {
                     $image->move(
-                        $this->getParameter('imagen_directory'),
+                        $this->getParameter('avatars'),
                         $newFilename
                     );
                 } catch (FileException $e) {
