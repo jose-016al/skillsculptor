@@ -43,7 +43,7 @@ export const Alert = ({ message, status }) => {
 
     return (
         // <div  className='z-30 py-3 px-3'>
-            <div className="w-full z-30 py-3 px-3 flex flex-col items-center gap-4" id='alert'>
+            <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-80 z-30 py-3 px-3">
                 {renderToast()}
             </div>
         // </div>

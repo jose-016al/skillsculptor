@@ -11,7 +11,7 @@ export const LayoutPublic = () => {
             {/* LAYOUT */}
             {/* Contenido principal */}
             <Nav />
-            <main className='container mx-auto'>
+            <main>
                 {!auth.id ? <Outlet /> : <Navigate to="/user" />}
             </main>
         </>

@@ -9,6 +9,7 @@ export const useProfile = (userid) => {
     const [profile, setProfile] = useState([]);
     const { auth } = useAuth();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const id = userid || auth.id;
@@ -25,11 +26,12 @@ export const useProfile = (userid) => {
             const { data, status } = await ApiRequests(`${Global.url}${id}/profile`, "GET", undefined, false);
             if (status === 200) {
                 setProfile(data);
+                setLoading(false);
             }
         } catch (error) {
             console.error("Error en la solicitud", error);
         }
     }
 
-    return { profile }
+    return { profile, loading }
 }

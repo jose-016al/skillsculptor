@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 export const useTheme = () => {
+
     const [theme, setTheme] = useState(() => {
         // Leer el tema desde localStorage o usar 'dark' por defecto
         return localStorage.getItem('theme') || 'dark';
@@ -9,19 +10,21 @@ export const useTheme = () => {
 
     useEffect(() => {
         const htmlElement = document.querySelector('html');
-        const customUlElement = document.querySelector('.custom-ul'); // Selecciona el ul con la clase 'custom-ul'
+        const customNavElement = document.querySelector('#nav-custom'); 
 
         if (theme === 'dark') {
             htmlElement?.classList.add('dark');
-            customUlElement?.classList.add('custom-ul-dark');
-            customUlElement?.classList.remove('custom-ul-light');
+            customNavElement?.classList.add('nav-custom-dark');
+            customNavElement?.classList.remove('nav-custom-light');
             setSwitch1(true);
         } else {
             htmlElement?.classList.remove('dark');
-            customUlElement?.classList.add('custom-ul-light');
-            customUlElement?.classList.remove('custom-ul-dark');
+            customNavElement?.classList.add('nav-custom-light');
+            customNavElement?.classList.remove('nav-custom-dark');
             setSwitch1(false);
         }
+
+        console.log(customNavElement);
 
         // Guardar el tema actual en localStorage
         localStorage.setItem('theme', theme);
@@ -33,5 +36,5 @@ export const useTheme = () => {
     };
 
     // Devolver un array o un objeto con los valores que quieres utilizar en el componente principal
-    return { switch1, changeTheme };
+    return { theme, switch1, changeTheme };
 };

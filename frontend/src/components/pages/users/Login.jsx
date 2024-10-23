@@ -62,12 +62,12 @@ export const Login = () => {
     };
 
     return (
-        <div id='loginlayout' className="flex flex-col md:flex-row items-center h-screen px-3">
+        <div className="flex flex-col lg:flex-row items-center h-screen px-3 mt-20 lg:mt-0">
             <div className="md:w-1/2 w-full">
-                <form id='forms' className="relative py-4 px-5 max-w-sm mx-auto border border-gray-100 rounded-lg bg-gray-100 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700" onSubmit={formik.handleSubmit}>
+                <form id='forms' className="relative py-4 px-5 max-w-sm mx-auto border border-gray-100 rounded-lg bg-gray-100 md:bg-white dark:bg-gray-800 dark:border-gray-700" onSubmit={formik.handleSubmit}>
                     <h1 className="text-center text-2xl font-semibold mb-4">Login</h1>
                     {loading &&
-                        <div id='container-loader' className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-10">
+                        <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 backdrop-blur-sm z-10">
                             <div className="loader"></div>
                         </div>
                     }
@@ -106,7 +106,7 @@ export const Login = () => {
                     <div>
                         {serverError && <Alert message={serverError} status={statusError} />}
                     </div>
-                    <div id='navlogin'>
+                    <div className='flex flex-col-reverse md:flex-row justify-between'>
                         <NavLink
                             className="text-blue-700 rounded-lg w-full sm:w-auto px-5 py-2.5 text-center"
                             to="/register">
@@ -122,10 +122,10 @@ export const Login = () => {
                 </form>
             </div>
 
-            <div className="md:w-1/2 w-full hidden md:flex justify-center items-center">
+            <div className="hidden md:flex justify-center items-center md:my-5 lg:px-5">
                 <img
                     src={signinimage}
-                    className="max-w-full h-auto md:max-w-lg lg:max-w-xl xl:max-w-2xl object-contain"
+                    className="max-w-full h-auto md:max-w-sm lg:max-w-xl xl:max-w-2xl object-contain"
                     alt="login-image"
                 />
             </div>

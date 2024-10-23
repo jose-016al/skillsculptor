@@ -3,13 +3,48 @@
 @tailwind utilities;
 @import url('https://fonts.googleapis.com/css?family=Fjalla+One');
 
-/* Estilos globales */
+/* -----ESTILOS GLOBALES----- */
 
 body {
     @apply bg-white text-black dark:bg-gray-900 dark:text-white;
 }
+
+/* Header---------- */
+.nav-custom-dark {
+    background-color: rgba(17, 24, 39, 0.5) !important;
+}
+
+.nav-custom-light {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Loader---------- */
+.loader {
+    width: 50px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 8px solid #3B82F6;
+    animation:
+      l20-1 0.8s infinite linear alternate,
+      l20-2 1.6s infinite linear;
+}
+@keyframes l20-1{
+    0%    {clip-path: polygon(50% 50%,0       0,  50%   0%,  50%    0%, 50%    0%, 50%    0%, 50%    0% )}
+    12.5% {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100%   0%, 100%   0%, 100%   0% )}
+    25%   {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100% 100%, 100% 100%, 100% 100% )}
+    50%   {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100% 100%, 50%  100%, 0%   100% )}
+    62.5% {clip-path: polygon(50% 50%,100%    0, 100%   0%,  100%   0%, 100% 100%, 50%  100%, 0%   100% )}
+    75%   {clip-path: polygon(50% 50%,100% 100%, 100% 100%,  100% 100%, 100% 100%, 50%  100%, 0%   100% )}
+    100%  {clip-path: polygon(50% 50%,50%  100%,  50% 100%,   50% 100%,  50% 100%, 50%  100%, 0%   100% )}
+}
+@keyframes l20-2{ 
+    0%    {transform:scaleY(1)  rotate(0deg)}
+    49.99%{transform:scaleY(1)  rotate(135deg)}
+    50%   {transform:scaleY(-1) rotate(0deg)}
+    100%  {transform:scaleY(-1) rotate(-135deg)}
+}
   
-/* Eror 404 */
+/* ====================Eror 404==================== */
 .container-404 {
     display: block;
     text-align: center;
@@ -42,210 +77,22 @@ body {
     100% { transform: rotate(8deg); }
 }
 
-
-/* Loader */
-#container-loader {
-    backdrop-filter: blur(1px);
-}
-.loader {
-    width: 50px;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    border: 8px solid #3B82F6;
-    animation:
-      l20-1 0.8s infinite linear alternate,
-      l20-2 1.6s infinite linear;
-}
-@keyframes l20-1{
-    0%    {clip-path: polygon(50% 50%,0       0,  50%   0%,  50%    0%, 50%    0%, 50%    0%, 50%    0% )}
-    12.5% {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100%   0%, 100%   0%, 100%   0% )}
-    25%   {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100% 100%, 100% 100%, 100% 100% )}
-    50%   {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100% 100%, 50%  100%, 0%   100% )}
-    62.5% {clip-path: polygon(50% 50%,100%    0, 100%   0%,  100%   0%, 100% 100%, 50%  100%, 0%   100% )}
-    75%   {clip-path: polygon(50% 50%,100% 100%, 100% 100%,  100% 100%, 100% 100%, 50%  100%, 0%   100% )}
-    100%  {clip-path: polygon(50% 50%,50%  100%,  50% 100%,   50% 100%,  50% 100%, 50%  100%, 0%   100% )}
-}
-@keyframes l20-2{ 
-    0%    {transform:scaleY(1)  rotate(0deg)}
-    49.99%{transform:scaleY(1)  rotate(135deg)}
-    50%   {transform:scaleY(-1) rotate(0deg)}
-    100%  {transform:scaleY(-1) rotate(-135deg)}
-}
-
-
-
-
-
-
-
+/* ====================Main==================== */
 main {
-    margin-top: 100px;
-}
-
-#alert {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-#nav {
-    position: fixed;
-    width: 100%;
-    top: 0;
-}
-
-#link {
-    transition: all 0.3s ease-out 0s;
-    position: relative;
-}
-
-#link::after {
-    content: "";
-    position: relative;
-    display: block;
-    height: 5px;
-    width: 0;
-    border-radius: 16px;
-    background: #3B82F6;
-    bottom: 1px;
-    left: 0;
-    z-index: -1;
-    transition: all 0.3s ease-out 0s;
-}
-
-#link:hover::after {
-    width: 100%;
-}
-
-#link:hover {
-    /* border-bottom: 2px solid #3B82F6; */
-}
-
-.custom-ul-light {
-    background-color: #f9fafb; 
-    border: 1px solid #e5e7eb; 
-    border-radius: 0.5rem; 
-}
-
-.custom-ul-dark {
-    background-color: #1f2937;
-    border-color: #374151; 
-    border-radius: 0.5rem; 
-}
-
-/* Boton de Search */
-#customSearchButton  span:nth-child(2) {
-    display: block;
-}
-#customSearchButton {
-    /* width: 256px; */
-    /* width: 156px; */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 5px 10px 5px 10px;
-}
-#customSearchButton span:nth-child(1) {
-    display: flex;
-    gap: 10px;
-}
-
-#custom-modal-header div div div:nth-child(1) {
-    padding: 10px;
-}
-
-#custom-modal-header-input {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 0px 0px 0px 10px;
-}
-
-#custom-modal-header-input div  {
-    padding: 0px 0px 0px 10px;
-}
-
-#imagelogin img {
-    width:70%;
-}
-
-#inputsregister div {
-    margin: 5px;
-    width: 95%;
-}
-
-#buttonregister {
-    margin: 15px 0px 15px 0px;
-}
-
-#navlogin {
-    display: flex;
-    flex-direction: column-reverse;
-    justify-content: space-between;
-}
-
-#loginlayout, #registerlayout {
-    margin-top: 100px;
+    /* margin-top: 100px; */
+    /* height: 2000px; */
 }
 
 #forms {
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
-#buttonNav span {
-    /* width: 100%; */
-    background-color: red;
-}
-
-#dropdownNavbar {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 30%;
-}
-
 @media (min-width: 768px) {
-    #dropdownNavbar {
-        left: 0; 
-        transform: none;
-        width: 100%;
-    }
-    .custom-ul-light {
-        background-color: transparent;
-        border: none;
-    }
-    .custom-ul-dark {
-        background-color: transparent;
-        border: none;
-    }
-    .layout {
-        margin-top: 20px;
-    }
-    #customSearchButton {
-        width: 100px;
-    }
-    #customSearchButton span:nth-of-type(2) {
-        display: none;
-    }
-    #buttonregister {
-        margin: 15px 0px 15px 20px;
-    }
-    #navlogin {
-        flex-direction: row;
-    }
-    #loginlayout {
-        margin-top: 0;
-    }
+
 }
 
 @media (min-width: 976px) {
-    #customSearchButton {
-        width: 256px;
-    }
-    #customSearchButton span:nth-of-type(2) {
-        display: block;
-    }
+
 }
 
 @media (min-width: 1440px) {
