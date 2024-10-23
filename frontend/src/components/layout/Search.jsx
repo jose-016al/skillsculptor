@@ -41,11 +41,11 @@ export const Search = () => {
             {/* Botón de búsqueda */}
             <button type="button" className="flex items-center justify-between w-full lg:w-52 transition-colors duration-300 text-gray-900 focus:outline-none bg-gray-200 rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-800 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-800" aria-label="Search"
                 onClick={() => setOpenModal(true)}>
-                <span className='flex  w-1/2 md:w-full lg:w-1/2 space-x-2 px-2'>
+                <span className='flex  w-1/2 md:w-full lg:w-1/2 space-x-2 p-2'>
                     <svg width="20" height="20" viewBox="0 0 20 20"> <path d="M14.386 14.386l4.0877 4.0877-4.0877-4.0877c-2.9418 2.9419-7.7115 2.9419-10.6533 0-2.9419-2.9418-2.9419-7.7115 0-10.6533 2.9418-2.9419 7.7115-2.9419 10.6533 0 2.9419 2.9418 2.9419 7.7115 0 10.6533z" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"></path> </svg>
-                    <span>Buscar...</span>
+                    <span className="md:hidden lg:block">Buscar...</span>
                 </span>
-                <span className='px-2 md:hidden lg:block'>
+                <span className='p-2 md:hidden lg:block'>
                     <kbd>Ctrl + </kbd>
                     <kbd>K</kbd>
                 </span>
@@ -74,7 +74,7 @@ export const Search = () => {
                                 to={`/profiles/home/${user.id}`}
                                 key={user.id}
                             >
-                                <img className="w-8 h-8 rounded-full mr-3" src={`${Global.url}${user.id}/avatar`} alt="user photo" />
+                                <img className="w-8 h-8 rounded-full mr-3 object-cover" src={`${Global.url}${user.id}/avatar`} alt="user photo" />
                                 <div>
                                     <h2 className="font-semibold">{user.name} {user.last_name}</h2>
                                     <p className="text-sm text-gray-500 dark:text-gray-400">{user.portfolio.position}</p>

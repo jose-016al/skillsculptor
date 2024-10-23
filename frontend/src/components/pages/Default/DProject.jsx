@@ -15,7 +15,8 @@ export const DProject = () => {
       title: 'Twitch Clone',
       description: 'Un clon de la popular plataforma de streaming Twitch, que permite a los usuarios transmitir y ver contenido en vivo. Incluye funciones de chat en tiempo real y seguimiento de usuarios.',
       demo: 'https://twitch-clone-demo.example.com',
-      github: 'https://github.com/usuario/twitch-clone'
+      github: 'https://github.com/usuario/twitch-clone',
+      image: 'iamgen'
     },
     {
       title: 'Portfolio Personal',
@@ -67,7 +68,7 @@ export const DProject = () => {
 
   return (
     <>
-      <div className='flex flex-row-reverse items-center justify-evenly md:h-screen px-5 mt-20 md:mt-0 md:space-x-5'>
+      <div className='flex flex-row-reverse items-center justify-evenly px-5 mt-20 md:space-x-5'>
         <div className="w-2/5 hidden md:flex items-center justify-center">
           <img
             src={image}
@@ -82,8 +83,17 @@ export const DProject = () => {
               <Accordion.Panel key={index}>
                 <Accordion.Title>{item.title}</Accordion.Title>
                 <Accordion.Content>
-                  {item.description}
-                  <div className='mt-3 flex justify-between'>
+                  <div className='flex flex-col-reverse items-center'>
+                    <p>{item.description}</p>
+                    {item.image &&
+                      <img
+                        src={item.image}
+                        className="mb-5 w-3/4 lg:w-1/3  object-cover"
+                        alt="project-image"
+                      />
+                    }
+                  </div>
+                  <div className='mt-3 flex justify-evenly'>
                     {item.demo &&
                       <a href={item.demo} className='text-white-100  py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg bg-blue-700 hover:bg-blue-500 focus:z-10 focus:ring-4 focus:ring-blue-500' target="_blank" rel="noopener noreferrer">
                         Demo

@@ -5,6 +5,7 @@ import { useProfile } from '../../../hooks/useProfile';
 import { Pagination } from "flowbite-react";
 import image from '../../../assets/img/undraw_organizing_projects_re_9p1k.svg';
 import { Accordion } from "flowbite-react";
+import { Global } from '../../../helpers/Global';
 
 export const Project = () => {
 
@@ -36,7 +37,7 @@ export const Project = () => {
 
   return (
     <>
-      <div className='flex flex-row-reverse items-center justify-evenly md:h-screen px-5 mt-20 md:mt-0 md:space-x-5'>
+      <div className='flex flex-row-reverse items-center justify-evenly px-5 mt-20 md:space-x-5'>
         {loading ?
           <div id='container-loader' className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-10">
             <div className="loader"></div>
@@ -61,8 +62,17 @@ export const Project = () => {
                       <Accordion.Panel key={index}>
                         <Accordion.Title>{item.title}</Accordion.Title>
                         <Accordion.Content>
-                          {item.description}
-                          <div className='mt-3 flex justify-between'>
+                          <div className='flex flex-col-reverse items-center'>
+                            <p>{item.description}</p>
+                            {item.image &&
+                              <img
+                                src={`${Global.url}${item.id}/image`}
+                                className="mb-5 w-3/4 lg:w-1/3  object-cover"
+                                alt="project-image"
+                              />
+                            }
+                          </div>
+                          <div className='mt-3 flex justify-evenly'>
                             {item.demo &&
                               <a href={item.demo} className='text-white-100  py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg bg-blue-700 hover:bg-blue-500 focus:z-10 focus:ring-4 focus:ring-blue-500' target="_blank" rel="noopener noreferrer">
                                 Demo

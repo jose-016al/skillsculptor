@@ -40,7 +40,8 @@ export const Nav = () => {
           {auth.id ?
             <Dropdown arrowIcon={false} inline
               label={
-                <Avatar alt="User settings" img={`${Global.url}${auth.id}/avatar`} rounded />
+                <img className="w-10 h-10 rounded-full object-cover" src={`${Global.url}${auth.id}/avatar`} alt="Rounded avatar" />
+
               }>
               <Dropdown.Header>
                 <span className="block text-sm">{`${auth.name} ${auth.last_name}`}</span>
