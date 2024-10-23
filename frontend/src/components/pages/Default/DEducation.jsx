@@ -39,7 +39,7 @@ export const DEducation = () => {
 
   return (
     <>
-      <div className='flex flex-row items-center justify-evenly h-screen px-5 space-x-5'>
+      <div className='flex flex-row items-center justify-evenly md:h-screen px-5 mt-10 md:mt-0 space-x-5'>
         <div className="w-2/5 hidden md:flex items-center justify-center">
           <img
             src={image}

@@ -35,7 +35,7 @@ export const Experience = () => {
 
   return (
     <>
-      <div className='flex flex-row items-center justify-evenly h-screen px-5 space-x-5'>
+      <div className='flex flex-row items-center justify-evenly md:h-screen px-5 mt-10 md:mt-0 space-x-5'>
         {loading ?
           <div id='container-loader' className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-10">
             <div className="loader"></div>
