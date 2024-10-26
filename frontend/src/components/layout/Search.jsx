@@ -3,6 +3,7 @@ import { Modal } from 'flowbite-react';
 import { useListUsers } from '../../hooks/useListUsers';
 import { Global } from '../../helpers/Global';
 import { NavLink, useLocation } from 'react-router-dom';
+import avatar from '../../assets/img/default.png';
 
 export const Search = () => {
 
@@ -61,7 +62,7 @@ export const Search = () => {
                         <div className="w-full">
                             <input type="text" onChange={handleSearchChange}
                                 className="block py-2.5  w-full text-sm text-gray-900 bg-transparent border-0 appearance-none dark:text-white dark:border-gray-600 focus:ring-0"
-                                placeholder="Buscar..."/>
+                                placeholder="Buscar..." />
                         </div>
                     </div>
                 </Modal.Header>
@@ -74,7 +75,8 @@ export const Search = () => {
                                 to={`/profiles/home/${user.id}`}
                                 key={user.id}
                             >
-                                <img className="w-8 h-8 rounded-full mr-3 object-cover" src={`${Global.url}${user.id}/avatar`} alt="user photo" />
+                                {user.image == 'default.png' && <img className="w-8 h-8 rounded-full mr-3 object-cover" src={avatar} alt="Bordered avatar" />}
+                                {user.image != 'default.png' && <img className="w-8 h-8 rounded-full mr-3 object-cover" src={`${Global.url}avatar/${user.image}`} alt="user photo" />}
                                 <div>
                                     <h2 className="font-semibold">{user.name} {user.last_name}</h2>
                                     <p className="text-sm text-gray-500 dark:text-gray-400">{user.portfolio.position}</p>

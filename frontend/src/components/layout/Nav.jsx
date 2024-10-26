@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Search } from './Search';
 import { Global } from '../../helpers/Global';
 import { useAuth } from '../../hooks/useAuth';
-import { FaChevronDown } from "react-icons/fa";
 import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { useClickAway } from "@uidotdev/usehooks";
 import { TiThMenu } from "react-icons/ti";
 import { IoCloseSharp } from "react-icons/io5";
-import { Avatar, Dropdown, Navbar } from "flowbite-react";
+import { Dropdown, Navbar } from "flowbite-react";
 import { useTheme } from '../../hooks/useTheme';
+import avatar from '../../assets/img/default.png';
 
 export const Nav = () => {
   const { auth } = useAuth();
@@ -40,8 +40,10 @@ export const Nav = () => {
           {auth.id ?
             <Dropdown arrowIcon={false} inline
               label={
-                <img className="w-10 h-10 rounded-full object-cover" src={`${Global.url}${auth.id}/avatar`} alt="Rounded avatar" />
-
+                <>
+                  {auth.image == 'default.png' && <img className="w-10 h-10 rounded-full object-cover" src={avatar} alt="Bordered avatar" />}
+                  {auth.image != 'default.png' && <img className="w-10 h-10 rounded-full object-cover" src={`${Global.url}avatar/${auth.image}`} alt="Bordered avatar" />}
+                </>
               }>
               <Dropdown.Header>
                 <span className="block text-sm">{`${auth.name} ${auth.last_name}`}</span>
@@ -55,7 +57,7 @@ export const Nav = () => {
               <NavLink to={`/user`}>
                 <Dropdown.Item>Mi perfil</Dropdown.Item>
               </NavLink>
-              <NavLink to={`/user/edit/${auth.id}`}>
+              <NavLink to={`/user/edit/${auth.id}/user`}>
                 <Dropdown.Item>Editar perfil</Dropdown.Item>
               </NavLink>
               <Dropdown.Divider />

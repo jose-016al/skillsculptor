@@ -14,7 +14,7 @@ export const ApiRequests = async (url, method, dataSave = "", file = false, toke
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 }
-            }   
+            }
         }
     }
     if (method == "POST" || method == "PUT") {
@@ -30,7 +30,7 @@ export const ApiRequests = async (url, method, dataSave = "", file = false, toke
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
-                }   
+                }
             }
         } else {
             options = {
@@ -48,7 +48,7 @@ export const ApiRequests = async (url, method, dataSave = "", file = false, toke
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`
                     }
-                }   
+                }
             }
         }
     }
@@ -56,9 +56,13 @@ export const ApiRequests = async (url, method, dataSave = "", file = false, toke
     // await new Promise(resolve => setTimeout(resolve, 2000));
 
     const apirequests = await fetch(url, options);
-        // Capturar el status de la respuesta
+    // Capturar el status de la respuesta
     const status = apirequests.status;
-    const data = await apirequests.json();
+    // Verifica el estado antes de intentar analizar la respuesta
+    let data = null;
+    if (status !== 204) {
+        data = await apirequests.json();  // Solo intenta parsear JSON si no es 204
+    }
 
     return {
         data,

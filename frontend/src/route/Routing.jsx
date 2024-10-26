@@ -7,15 +7,17 @@ import { Register } from '../components/pages/users/Register'
 import { LayoutPublic } from '../components/layout/public/LayoutPublic'
 import { LayoutPrivate } from '../components/layout/private/LayoutPrivate'
 import { Logout } from '../components/pages/users/Logout'
-import { Edit } from '../components/pages/users/Edit'
 import { DHome } from '../components/pages/Default/DHome'
 import { DEducation } from '../components/pages/Default/DEducation'
 import { DExperience } from '../components/pages/Default/DExperience'
 import { DProject } from '../components/pages/Default/DProject'
 import { Home } from '../components/pages/portfolios/Home'
-import { Education } from '../components/pages/portfolios/Education'
+import { Education } from '../components/pages/portfolios/Education/Education.jsx'
 import { Experience } from '../components/pages/portfolios/Experience'
-import { Project } from '../components/pages/portfolios/Project'
+import { Project } from '../components/pages/portfolios/Project/Project'
+import { EditUser } from '../components/pages/users/Edit/EditUser'
+import { EditProject } from '../components/pages/users/Edit/EditProject.jsx'
+import { EdiEducation } from '../components/pages/users/Edit/EditEducation.jsx'
 
 export const Routing = () => {
     return (
@@ -43,7 +45,11 @@ export const Routing = () => {
                     {/* Usuarios logueados */}
                     <Route path='/user' element={<LayoutPrivate />}>
                         <Route index element={<Home />} />
-                        <Route path='edit/:userid' element={<Edit />} />
+                        <Route path='edit/:userid/user' element={<EditUser />} />
+                        <Route path='edit/:userid/portfolio' element={<EditUser />} />
+                        <Route path='edit/:userid/education' element={<EdiEducation />} />
+                        <Route path='edit/:userid/experience' element={<EditUser />} />
+                        <Route path='edit/:userid/project' element={<EditProject />} />
                         <Route path='logout' element={<Logout />} />
                     </Route>
 

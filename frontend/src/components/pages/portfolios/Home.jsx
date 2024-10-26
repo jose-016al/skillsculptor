@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useProfile } from '../../../hooks/useProfile';
 import { Stack } from './Stack';
 import { Global } from '../../../helpers/Global';
+import avatar from '../../../assets/img/default.png';
 
 export const Home = () => {
 
@@ -28,7 +29,8 @@ export const Home = () => {
               <Stack languages={profile.portfolio.stack} />
             </div>
             <div className='md:flex justify-center md:w-2/5'>
-              <img className="w-64 h-64 lg:w-80 lg:h-80 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500 object-cover" src={`${Global.url}${profile.id}/avatar`} alt="Bordered avatar" />
+              {profile.image == 'default.png' && <img className="w-64 h-64 lg:w-80 lg:h-80 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500 object-cover" src={avatar} alt="Bordered avatar" />}
+              {profile.image != 'default.png' && <img className="w-64 h-64 lg:w-80 lg:h-80 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500 object-cover" src={`${Global.url}avatar/${profile.image}`} alt="Bordered avatar" />}
             </div>
           </>
         }

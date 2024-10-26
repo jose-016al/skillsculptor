@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useAuth } from '../../../hooks/useAuth';
+import { useAuth } from '../../../../hooks/useAuth';
 import { useParams } from 'react-router-dom';
-import { useProfile } from '../../../hooks/useProfile';
+import { useProfile } from '../../../../hooks/useProfile';
 import { Pagination } from "flowbite-react";
-import image from '../../../assets/img/undraw_organizing_projects_re_9p1k.svg';
+import image from '../../../../assets/img/undraw_organizing_projects_re_9p1k.svg';
 import { Accordion } from "flowbite-react";
-import { Global } from '../../../helpers/Global';
+import { Global } from '../../../../helpers/Global';
 
 export const Project = () => {
 

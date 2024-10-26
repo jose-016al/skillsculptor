@@ -4,7 +4,7 @@ import { useAuth } from "../../../hooks/useAuth";
 
 export const Logout = () => {
 
-    const {setAuth, setCounters} = useAuth();
+    const {setAuth} = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {

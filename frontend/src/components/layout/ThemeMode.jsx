@@ -7,8 +7,9 @@ export const ThemeMode = () => {
   const { switch1, changeTheme } = useTheme();
 
   return (
-    <div className="flex max-w-md flex-col items-start gap-4">
+    <div className='flex justify-center'>
       <ToggleSwitch
+        className='flex flex-row-reverse items-center gap-5'
         checked={switch1}
         label="Modo oscuro"
         onChange={changeTheme}
