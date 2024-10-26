@@ -5,33 +5,11 @@ import { useAuth } from '../../../../hooks/useAuth';
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Alert } from '../../../layout/Alert';
-
-const FILE_SIZE = 1024 * 1024; // 1024 KB
-const SUPPORTED_FORMATS = ["image/jpeg", "image/png"];
+import { Datepicker } from 'flowbite-react';
 
 const validationSchema = Yup.object().shape({
-  title: Yup.string()
-    .required("El título es obligatorio"),
-  description: Yup.string()
-    .required("La descripción es obligatoria"),
-  demo: Yup.string()
-    .url("Debe ser un enlace válido")
-    .nullable(), // Permite que sea opcional
-  github: Yup.string()
-    .url("Debe ser un enlace válido")
-    .nullable(), // Permite que sea opcional
-  image: Yup.mixed()
-    .nullable()
-    .test(
-      "fileSize",
-      "El archivo es demasiado grande. El tamaño máximo es 1024 KB",
-      (value) => !value || (value && value.size <= FILE_SIZE)
-    )
-    .test(
-      "fileFormat",
-      "Solo se permiten archivos de tipo JPEG o PNG",
-      (value) => !value || (value && SUPPORTED_FORMATS.includes(value.type))
-    ),
+  title: Yup.string().required("El título es obligatorio"),
+  date: Yup.string().required("La fecha es obligatorio"),
 });
 
 export const Add = () => {
@@ -50,10 +28,7 @@ export const Add = () => {
   const formik = useFormik({
     initialValues: {
       title: "",
-      description: "",
-      demo: "",
-      github: "",
-      image: null
+      date: ""
     },
     validationSchema,
     onSubmit: values => {
@@ -65,44 +40,21 @@ export const Add = () => {
   const add = async (form) => {
     setServerError("");
     setStatusError("");
-    let project = form;
+    let education = form;
     try {
       const token = localStorage.getItem('token');
-      const { data, status } = await ApiRequests(`${Global.url}${auth.portfolio.id}/project`, "POST", project, false, token);
+      const { data, status } = await ApiRequests(`${Global.url}${auth.portfolio.id}/education`, "POST", education, false, token);
       if (status === 201) {
-
-        /* Subir imagen */
-        const fileInput = document.querySelector("#file1");
-        const id = data.id;
-        if (status === 201 && fileInput.files[0]) {
-          const formData = new FormData();
-          formData.append("image", fileInput.files[0]);
-          const { data, status } = await ApiRequests(`${Global.url}project/${id}/upload`, "POST", formData, true, token);
-          if (status === 201) {
-            const updatedUser = {
-              ...auth,
-              portfolio: {
-                ...auth.portfolio,
-                project: [...auth.portfolio.project, data] // Añadir el nuevo proyecto al array
-              }
-            };
-            setAuth(updatedUser);
-          } else {
-            setServerError("No se ha podido subir la imagen");
-            setStatusError("error");
+        const updatedUser = {
+          ...auth,
+          portfolio: {
+            ...auth.portfolio,
+            education: [...auth.portfolio.education, data] // Añadir el nuevo proyecto al array
           }
-        } else {
-          const updatedUser = {
-            ...auth,
-            portfolio: {
-              ...auth.portfolio,
-              project: [...auth.portfolio.project, data] // Añadir el nuevo proyecto al array
-            }
-          };
-          setAuth(updatedUser);
-        }
+        };
+        setAuth(updatedUser);
 
-        setServerError("Proyecto añadido correctamente");
+        setServerError("Formación añadida correctamente");
         setStatusError("success");
         setLoading(false);
       } else if (status === 403) {
@@ -117,15 +69,28 @@ export const Add = () => {
     }
   };
 
-  const handleImageChange = (event) => {
-    formik.setFieldValue("image", event.currentTarget.files[0]);
+  // Logica de la funcion de fecha
+  const now = new Date();
+  const minDate = new Date(now.getFullYear() - 70, now.getMonth(), now.getDate()); // 70 años atrás
+
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleDateChange = (value) => {
+    const year = value ? value.getFullYear() : null; // Extraer solo el año
+    formik.setFieldValue("date", year); // Actualizar el valor de Formik
+  };
+
+  const handleCheckboxChange = () => {
+    setIsChecked((prev) => !prev);
+    if (!isChecked) {
+      formik.setFieldValue("date", "Actualmente");
+    }
   };
 
   return (
-
     <div className='w-full'>
       <form className="relative py-4 px-5" onSubmit={formik.handleSubmit}>
-        <h1 className="text-center text-2xl font-semibold mb-4">Añadir nuevo proyecto</h1>
+        <h1 className="text-center text-2xl font-semibold mb-4">Añadir formación</h1>
         {loading &&
           <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 backdrop-blur-sm z-10">
             <div className="loader"></div>
@@ -151,73 +116,31 @@ export const Add = () => {
           </div>
           <div className='md:w-1/2'>
             <div>
-              <label htmlFor="image" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                Subir imagen
+              <label htmlFor="date" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
+                Fecha de finalización
               </label>
-              <input
-                type="file"
-                name='image'
-                id='file1'
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                onChange={handleImageChange}
+              <Datepicker
+                language="es-ES"
+                minDate={minDate}
+                maxDate={now}
+                selected={isChecked ? now : formik.values.date} // Selecciona según el estado del checkbox
+                onChange={isChecked ? () => handleDateChange(now) : handleDateChange} // Actualiza el valor de date en Formik
+                disabled={isChecked} // Deshabilita el Datepicker si el checkbox está marcado
               />
+              <div className='flex space-x-2 items-center'>
+                <input
+                  type="checkbox"
+                  name='date'
+                  checked={isChecked}
+                  onChange={handleCheckboxChange}
+                />
+                <label htmlFor="date" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
+                  Actualmente
+                </label>
+              </div>
             </div>
             <div>
-              {formik.errors.image && formik.touched.image ? formik.errors.image : ""}
-            </div>
-          </div>
-        </div>
-        <div className='flex flex-col md:flex-row md:space-x-4'>
-          <div className='md:w-1/2'>
-            <div>
-              <label htmlFor="demo" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                Página demo
-              </label>
-              <input
-                type="text"
-                name="demo"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                value={formik.values.demo}
-                onChange={formik.handleChange}
-              />
-            </div>
-            <div>
-              {formik.errors.demo && formik.touched.demo ? formik.errors.demo : ""}
-            </div>
-          </div>
-          <div className='md:w-1/2'>
-            <div>
-              <label htmlFor="github" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                Enlace repositorio GitHub
-              </label>
-              <input
-                type="text"
-                name="github"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                value={formik.values.github}
-                onChange={formik.handleChange}
-              />
-            </div>
-            <div>
-              {formik.errors.github && formik.touched.github ? formik.errors.github : ""}
-            </div>
-          </div>
-        </div>
-        <div className='flex flex-col md:flex-row'>
-          <div className='w-full'>
-            <div>
-              <label htmlFor="description" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                Descripción
-              </label>
-              <textarea
-                name="description"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                value={formik.values.description}
-                onChange={formik.handleChange}
-              />
-            </div>
-            <div>
-              {formik.errors.password && formik.touched.password ? formik.errors.password : ""}
+              {formik.errors.date && formik.touched.date ? formik.errors.date : ""}
             </div>
           </div>
         </div>

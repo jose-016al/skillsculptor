@@ -19,16 +19,9 @@ export const Remove = ({ id }) => {
         setLoading(true); // Iniciamos el estado de carga
         try {
             const token = localStorage.getItem('token');
-
-            // Realiza la solicitud de eliminación
             const { status } = await ApiRequests(`${Global.url}${id}/delete/project`, "DELETE", undefined, false, token);
-            
-            // Verifica el estado de la respuesta
             if (status === 204) {
-                // Filtra el proyecto eliminado del array
                 const updatedProjects = auth.portfolio.project.filter(proj => proj.id !== id);
-                
-                // Actualiza el estado de auth con los proyectos actualizados
                 setAuth({
                     ...auth,
                     portfolio: {
@@ -76,10 +69,9 @@ export const Remove = ({ id }) => {
                             ¿Estás seguro de que deseas eliminar este proyecto?
                         </h3>
 
-                        {/* Mostrar loader dentro del modal si loading es true */}
                         {loading ? (
                             <div className="flex justify-center items-center">
-                                <div className="loader"></div> {/* Aquí puedes usar tu propio componente de loader */}
+                                <div className="loader"></div> 
                             </div>
                         ) : (
                             <div className="flex justify-center gap-4">

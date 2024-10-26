@@ -31,8 +31,8 @@ export const EdiEducation = () => {
                       </div>
                     </Accordion.Title>
                     <Accordion.Content>
-                      <div className='flex space-x-4'>
-                        {/* <Update education={item} /> */}
+                      <div className='flex justify-center space-x-4'>
+                        <Update education={item} />
                         <Remove id={item.id} />
                       </div>
                     </Accordion.Content>
