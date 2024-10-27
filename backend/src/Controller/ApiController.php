@@ -127,11 +127,11 @@ class ApiController extends AbstractController
         return new JsonResponse($userJSON, 200);
     }
 
-    #[Route('/{id}/avatar', name: 'app_api_avatar', methods: ['GET'])]
-    public function avatar(UserRepository $userRepository, int $id): Response
+    #[Route('/avatar/{name}', name: 'app_api_avatar', methods: ['GET'])]
+    public function avatar(UserRepository $userRepository, string $name): Response
     {
-        // Buscar el usuario en la base de datos por su ID
-        $user = $userRepository->find($id);
+        // Buscar el usuario en la base de datos por el nombre de la imagen
+        $user = $userRepository->findOneBy(['image' => $name]);
 
         // Obtener el nombre de la imagen del avatar
         $imageFilename = $user->getImage();
@@ -143,8 +143,9 @@ class ApiController extends AbstractController
         return new BinaryFileResponse($imagePath);
     }
 
+
     #[Route('/{id}/edit/user', name: 'app_api_edit_user', methods: ["PUT"])]
-    public function edituser(Request $request, User $user, UserRepository $userRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, JWTEncoderInterface $jwtEncoder, int $id): JsonResponse
+    public function edituser(Request $request, User $user, UserRepository $userRepository, Apiformatter $apiFormatter, ManagerRegistry $doctrine, JWTEncoderInterface $jwtEncoder, UserPasswordHasherInterface $passwordHasher, int $id): JsonResponse
     {
         $entityManager = $doctrine->getManager();
         $data = json_decode($request->getContent(), true);
@@ -181,9 +182,21 @@ class ApiController extends AbstractController
             return new JsonResponse(['error' => 'No tienes permisos para editar este usuario'], 403);
         }
 
+        // Verificar si el email está en uso por otro usuario
+        $existingUser = $userRepository->findOneBy(['email' => $data['email']]);
+
+        if ($existingUser && $existingUser->getId() !== $user->getId()) {
+            return new JsonResponse('Este email ya está en uso', 400);
+        }
+
         $user->setEmail($data['email']);
         $user->setName($data['name']);
         $user->setLastName($data['last_name']);
+
+        if (!empty($data['password'])) {
+            $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
+            $user->setPassword($hashedPassword);
+        }
 
         // Guardar los cambios del usuario en la base de datos
         $entityManager->flush();
@@ -426,7 +439,6 @@ class ApiController extends AbstractController
     public function deleteEducation(Request $request, Education $education, EducationRepository $educationRepository, ManagerRegistry $doctrine, JWTEncoderInterface $jwtEncoder, int $id): JsonResponse
     {
         $entityManager = $doctrine->getManager();
-        $data = json_decode($request->getContent(), true);
 
         // Obtener el token JWT de la cabecera Authorization
         $authHeader = $request->headers->get('Authorization');
@@ -471,7 +483,7 @@ class ApiController extends AbstractController
         $entityManager->flush();
 
         // Devolver una respuesta de éxito
-        return new JsonResponse(['message' => 'Se ha eliminado una formacion'], 204);
+        return new JsonResponse(null, 204);
     }
 
     // Metodos para la experience
@@ -598,7 +610,6 @@ class ApiController extends AbstractController
     public function deleteExperience(Request $request, Experience $experience, ExperienceRepository $experienceRepository, ManagerRegistry $doctrine, JWTEncoderInterface $jwtEncoder, int $id): JsonResponse
     {
         $entityManager = $doctrine->getManager();
-        $data = json_decode($request->getContent(), true);
 
         // Obtener el token JWT de la cabecera Authorization
         $authHeader = $request->headers->get('Authorization');
@@ -643,7 +654,7 @@ class ApiController extends AbstractController
         $entityManager->flush();
 
         // Devolver una respuesta de éxito
-        return new JsonResponse(['message' => 'Se ha eliminado una experienica'], 204);
+        return new JsonResponse(null, 204);
     }
 
     // Metodos para los project
@@ -774,7 +785,6 @@ class ApiController extends AbstractController
     public function deleteProject(Request $request, Project $project, ProjectRepository $projectRepository, ManagerRegistry $doctrine, JWTEncoderInterface $jwtEncoder, int $id): JsonResponse
     {
         $entityManager = $doctrine->getManager();
-        $data = json_decode($request->getContent(), true);
 
         // Obtener el token JWT de la cabecera Authorization
         $authHeader = $request->headers->get('Authorization');
@@ -819,14 +829,14 @@ class ApiController extends AbstractController
         $entityManager->flush();
 
         // Devolver una respuesta de éxito
-        return new JsonResponse(['message' => 'Se ha eliminado un proyecto'], 204);
+        return new JsonResponse(null, 204);
     }
 
-    #[Route('/{id}/image', name: 'app_api_image_project', methods: ['GET'])]
-    public function showImageProject(ProjectRepository $projectRepository, int $id): Response
+    #[Route('/image/{name}', name: 'app_api_image_project', methods: ['GET'])]
+    public function showImageProject(ProjectRepository $projectRepository, string $name): Response
     {
-        // Buscar el proyecto en la base de datos por su ID
-        $project = $projectRepository->find($id);
+        // Buscar el proyecto en la base de datos por el nombre de la imagen
+        $project = $projectRepository->findOneBy(['image' => $name]);
 
         // Obtener el nombre de la imagen del proyecto
         $imageFilename = $project->getImage();
