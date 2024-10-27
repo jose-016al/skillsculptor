@@ -19,6 +19,7 @@ import { EditUser } from '../components/pages/users/Edit/EditUser'
 import { EditProject } from '../components/pages/users/Edit/EditProject.jsx'
 import { EdiEducation } from '../components/pages/users/Edit/EditEducation.jsx'
 import { EdiExperience } from '../components/pages/users/Edit/EditExperience.jsx'
+import { EditPortfolio } from '../components/pages/users/Edit/EditPortfolio.jsx'
 
 export const Routing = () => {
     return (
@@ -47,7 +48,7 @@ export const Routing = () => {
                     <Route path='/user' element={<LayoutPrivate />}>
                         <Route index element={<Home />} />
                         <Route path='edit/:userid/user' element={<EditUser />} />
-                        <Route path='edit/:userid/portfolio' element={<EditUser />} />
+                        <Route path='edit/:userid/portfolio' element={<EditPortfolio />} />
                         <Route path='edit/:userid/education' element={<EdiEducation />} />
                         <Route path='edit/:userid/experience' element={<EdiExperience />} />
                         <Route path='edit/:userid/project' element={<EditProject />} />

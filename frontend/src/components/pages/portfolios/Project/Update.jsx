@@ -122,7 +122,7 @@ export const Update = ({ project }) => {
             <Modal show={openModal} size="4xl" onClose={() => setOpenModal(false)} popup>
                 <Modal.Header />
                 <Modal.Body>
-                    <form className="relative py-4 px-5" onSubmit={formik.handleSubmit}>
+                    <form className="py-4 px-5" onSubmit={formik.handleSubmit}>
                         <h1 className="text-center text-2xl font-semibold mb-4">Editar proyecto</h1>
                         {loading &&
                             <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 backdrop-blur-sm z-10">

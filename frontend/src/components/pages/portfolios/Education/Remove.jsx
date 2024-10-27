@@ -71,7 +71,7 @@ export const Remove = ({ id }) => {
 
                         {loading ? (
                             <div className="flex justify-center items-center">
-                                <div className="loader"></div> {/* Aquí puedes usar tu propio componente de loader */}
+                                <div className="loader"></div> 
                             </div>
                         ) : (
                             <div className="flex justify-center gap-4">

@@ -8,6 +8,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Alert } from '../../../layout/Alert';
 import { Datepicker } from 'flowbite-react';
+import { Dates } from '../../../layout/Dates';
 
 export const Update = ({ education }) => {
 
@@ -67,24 +68,6 @@ export const Update = ({ education }) => {
         }
     };
 
-    // Logica de la funcion de fecha
-    const now = new Date();
-    const minDate = new Date(now.getFullYear() - 70, now.getMonth(), now.getDate()); // 70 años atrás
-
-    const [isChecked, setIsChecked] = useState(false);
-
-    const handleDateChange = (value) => {
-        const year = value ? value.getFullYear() : null; // Extraer solo el año
-        formik.setFieldValue("date", year); // Actualizar el valor de Formik
-    };
-
-    const handleCheckboxChange = () => {
-        setIsChecked((prev) => !prev);
-        if (!isChecked) {
-            formik.setFieldValue("date", "Actualmente");
-        }
-    };
-
     return (
         <>
             <Button
@@ -121,34 +104,9 @@ export const Update = ({ education }) => {
                                     {formik.errors.title && formik.touched.title ? formik.errors.title : ""}
                                 </div>
                             </div>
+                            <Dates setDate={(date) => formik.setFieldValue("date", date)} rangeDatePicker={false} />
                             <div>
-                                <div>
-                                    <label htmlFor="date" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                                        Fecha de finalización
-                                    </label>
-                                    <Datepicker
-                                        language="es-ES"
-                                        minDate={minDate}
-                                        maxDate={now}
-                                        selected={isChecked ? now : formik.values.date} // Selecciona según el estado del checkbox
-                                        onChange={isChecked ? () => handleDateChange(now) : handleDateChange} // Actualiza el valor de date en Formik
-                                        disabled={isChecked} // Deshabilita el Datepicker si el checkbox está marcado
-                                    />
-                                    <div className='flex space-x-2 items-center'>
-                                        <input
-                                            type="checkbox"
-                                            name='date'
-                                            checked={isChecked}
-                                            onChange={handleCheckboxChange}
-                                        />
-                                        <label htmlFor="date" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                                            Actualmente
-                                        </label>
-                                    </div>
-                                </div>
-                                <div>
-                                    {formik.errors.date && formik.touched.date ? formik.errors.date : ""}
-                                </div>
+                                {formik.errors.date && formik.touched.date ? formik.errors.date : ""}
                             </div>
                         </div>
                         <div>

@@ -1,94 +1,103 @@
-import React, { useEffect, useState } from 'react'
-import { Datepicker } from 'flowbite-react';
+import React, { useEffect, useState } from 'react';
+import { Checkbox, Datepicker } from 'flowbite-react';
 
-export const Dates = ({ setDate, RangeDatePicker }) => {
-
+export const Dates = ({ setDate, rangeDatePicker }) => {
+    const [startDate, setStartDate] = useState();
+    const [endDate, setEndDate] = useState();
     const [isChecked, setIsChecked] = useState(false);
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-    const [dateLimitStart, setDateLimitStart] = useState(null);
-    const [dateLimitEnd, setDateLimitEnd] = useState(null);
-
-    useEffect(() => {
-        if (startDate && endDate) {
-            setDate(`${startDate} - ${endDate}`);
-            console.log(startDate, endDate);
-        }
-    }, [startDate, endDate, dateLimitStart, dateLimitEnd]);
 
     const now = new Date();
     const minDate = new Date(now.getFullYear() - 70, now.getMonth(), now.getDate()); // 70 años atrás
 
-    // Cuando solo esta la fecha de fin, para educacion
-    const handleDateChangeEndOnly = (value) => {
-        const year = value ? value.getFullYear() : null; // Extraer solo el año
-        setDate(year);
-    };
+    useEffect(() => {
+        formatDateToString();
+    }, [startDate, endDate, isChecked, rangeDatePicker]);
 
-    // Si se esta estuadiando o trabajando actualmente 
-    const handleCheckboxChange = () => {
-        setIsChecked((prev) => !prev);
-        if (!isChecked) {
-            if (RangeDatePicker) {
-                setEndDate("Actualmente");
-            } else {
-                setDate("Actualmente");
+    const formatDateToString = () => {
+        if (rangeDatePicker) {
+            if (startDate && endDate) {
+                if (isChecked) {
+                    setDate(`${startDate.toLocaleString('es-ES', { month: 'long' })}/${startDate.getFullYear()} - Actualmente`);
+                } else {
+                    setDate(`${startDate.toLocaleString('es-ES', { month: 'long' })}/${startDate.getFullYear()} - ${endDate.toLocaleString('es-ES', { month: 'long' })}/${endDate.getFullYear()}`);
+                }
+            }
+        } else {
+            if (endDate) {
+                if (isChecked) {
+                    setDate("Actualmente");
+                } else {
+                    setDate(`${endDate.getFullYear()}`);
+                }
             }
         }
     };
 
-    const handleDateChangeStart = (value) => {
-        setDateLimitStart(value);
-        const dateFormat = value ? `${value.toLocaleString('es-ES', { month: 'long' })}/${value.getFullYear()}` : null;
-        setStartDate(dateFormat);
+    const handleStartDateChange = (date) => {
+        setStartDate(date);
+        if (endDate && date > endDate) {
+            setEndDate(date);
+        }
     };
 
-    const handleDateChangeEnd = (value) => {
-        setDateLimitEnd(value);
-        const dateFormat = value ? `${value.toLocaleString('es-ES', { month: 'long' })}/${value.getFullYear()}` : null;
-        setEndDate(dateFormat);
+    const handleEndDateChange = (date) => {
+        if (date < startDate) {
+            setStartDate(date);
+        }
+        setEndDate(date);
     };
 
-    // Mostrar un solo Datepicker para fecha de fin o mostrar dos para fecha de inicio y fin
-    if (RangeDatePicker) {
+    const handleCheckboxChange = () => {
+        setIsChecked((prev) => !prev);
+        if (!isChecked) {
+            setEndDate(now);
+        }
+    };
+
+    if (rangeDatePicker) {
         return (
             <div className='flex flex-col md:flex-row md:space-x-4'>
                 <div className='md:w-1/2'>
                     <div>
-                        <label htmlFor="date" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
+                        <label htmlFor="start-date" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
                             Fecha de inicio
                         </label>
                         <Datepicker
-                            language="es-ES"
-                            minDate={minDate}
-                            maxDate={dateLimitEnd || now}
-                            onChange={handleDateChangeStart}
-                        />
-                    </div>
-                </div>
-                <div className='md:w-1/2'>
-                    <div>
-                        <label htmlFor="date" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Fecha de finalización
-                        </label>
-                        <Datepicker
+                            value={startDate}
                             language="es-ES"
                             minDate={minDate}
                             maxDate={now}
-                            onChange={handleDateChangeEnd}
+                            weekStart={1}
+                            onChange={handleStartDateChange}
+                        />
+                    </div>
+                </div>
+
+                <div className='md:w-1/2'>
+                    <div>
+                        <label htmlFor="end-date" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Fecha de fin
+                        </label>
+                        <Datepicker
+                            language="es-ES"
+                            weekStart={1}
+                            minDate={minDate}
+                            maxDate={now}
+                            value={isChecked ? now : endDate}
+                            onChange={handleEndDateChange}
                             disabled={isChecked}
                         />
-                        <div className='flex space-x-2 items-center'>
-                            <input
-                                type="checkbox"
-                                name='date'
-                                checked={isChecked}
-                                onChange={handleCheckboxChange}
-                            />
-                            <label htmlFor="date" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Actualmente
-                            </label>
-                        </div>
+                    </div>
+
+                    <div className='flex space-x-2 items-center'>
+                        <Checkbox
+                            checked={isChecked}
+                            onChange={handleCheckboxChange}
+                            label="Actualmente"
+                        />
+                        <label htmlFor="currently" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Actualmente
+                        </label>
                     </div>
                 </div>
             </div>
@@ -101,9 +110,11 @@ export const Dates = ({ setDate, RangeDatePicker }) => {
                 </label>
                 <Datepicker
                     language="es-ES"
+                    weekStart={1}
                     minDate={minDate}
                     maxDate={now}
-                    onChange={handleDateChangeEndOnly}
+                    value={isChecked ? now : endDate}
+                    onChange={handleEndDateChange}
                     disabled={isChecked}
                 />
                 <div className='flex space-x-2 items-center'>

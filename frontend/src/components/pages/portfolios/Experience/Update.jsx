@@ -8,8 +8,9 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Alert } from '../../../layout/Alert';
 import { Datepicker } from 'flowbite-react';
+import { Dates } from '../../../layout/Dates';
 
-export const Update = ({ education }) => {
+export const Update = ({ experience }) => {
 
     const [openModal, setOpenModal] = useState(false);
     const [serverError, setServerError] = useState("");
@@ -33,26 +34,28 @@ export const Update = ({ education }) => {
         setStatusError("");
 
         let dataSave = {
-            title: form.title || education.title,
-            date: form.date || education.date,
+            title: form.title || experience.title,
+            date: form.date || experience.date,
+            company: form.company || experience.company,
+            page: form.page || experience.page,
         };
 
         try {
             const token = localStorage.getItem('token');
-            const { data, status } = await ApiRequests(`${Global.url}${education.id}/edit/education`, "PUT", dataSave, false, token);
+            const { data, status } = await ApiRequests(`${Global.url}${experience.id}/edit/experience`, "PUT", dataSave, false, token);
             if (status === 200) {
                 const updatedUser = {
                     ...auth,
                     portfolio: {
                         ...auth.portfolio,
-                        education: auth.portfolio.education.map(edu =>
-                            edu.id === education.id ? { ...edu, ...data } : edu
+                        experience: auth.portfolio.experience.map(exp =>
+                            exp.id === experience.id ? { ...exp, ...data } : exp
                         )
                     }
                 };
                 setAuth(updatedUser);
 
-                setServerError("Formaciión actualizada correctamente");
+                setServerError("Experiencia actualizada correctamente");
                 setStatusError("success");
                 setLoading(false);
             } else if (status === 403) {
@@ -67,24 +70,6 @@ export const Update = ({ education }) => {
         }
     };
 
-    // Logica de la funcion de fecha
-    const now = new Date();
-    const minDate = new Date(now.getFullYear() - 70, now.getMonth(), now.getDate()); // 70 años atrás
-
-    const [isChecked, setIsChecked] = useState(false);
-
-    const handleDateChange = (value) => {
-        const year = value ? value.getFullYear() : null; // Extraer solo el año
-        formik.setFieldValue("date", year); // Actualizar el valor de Formik
-    };
-
-    const handleCheckboxChange = () => {
-        setIsChecked((prev) => !prev);
-        if (!isChecked) {
-            formik.setFieldValue("date", "Actualmente");
-        }
-    };
-
     return (
         <>
             <Button
@@ -93,18 +78,18 @@ export const Update = ({ education }) => {
                 Editar
             </Button>
 
-            <Modal show={openModal} size="md" onClose={() => setOpenModal(false)} popup>
+            <Modal show={openModal} size="2xl" onClose={() => setOpenModal(false)} popup>
                 <Modal.Header />
                 <Modal.Body>
                     <form className="py-4 px-5" onSubmit={formik.handleSubmit}>
-                        <h1 className="text-center text-2xl font-semibold mb-4">Editar formación</h1>
+                        <h1 className="text-center text-2xl font-semibold mb-4">Editar experiencia</h1>
                         {loading &&
                             <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 backdrop-blur-sm z-10">
                                 <div className="loader"></div>
                             </div>
                         }
-                        <div className='flex flex-col'>
-                            <div>
+                        <div className='flex flex-col md:flex-row'>
+                            <div className='w-full'>
                                 <div>
                                     <label htmlFor="title" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
                                         Titulo
@@ -113,7 +98,7 @@ export const Update = ({ education }) => {
                                         type="text"
                                         name="title"
                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        defaultValue={education.title}
+                                        defaultValue={experience.title}
                                         onChange={formik.handleChange}
                                     />
                                 </div>
@@ -121,35 +106,46 @@ export const Update = ({ education }) => {
                                     {formik.errors.title && formik.touched.title ? formik.errors.title : ""}
                                 </div>
                             </div>
-                            <div>
+                        </div>
+                        <div className='flex flex-col md:flex-row md:space-x-4'>
+                            <div className='md:w-1/2'>
                                 <div>
-                                    <label htmlFor="date" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                                        Fecha de finalización
+                                    <label htmlFor="company" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
+                                        Empresa
                                     </label>
-                                    <Datepicker
-                                        language="es-ES"
-                                        minDate={minDate}
-                                        maxDate={now}
-                                        selected={isChecked ? now : formik.values.date} // Selecciona según el estado del checkbox
-                                        onChange={isChecked ? () => handleDateChange(now) : handleDateChange} // Actualiza el valor de date en Formik
-                                        disabled={isChecked} // Deshabilita el Datepicker si el checkbox está marcado
+                                    <input
+                                        type="text"
+                                        name="company"
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        defaultValue={experience.company}
+                                        onChange={formik.handleChange}
                                     />
-                                    <div className='flex space-x-2 items-center'>
-                                        <input
-                                            type="checkbox"
-                                            name='date'
-                                            checked={isChecked}
-                                            onChange={handleCheckboxChange}
-                                        />
-                                        <label htmlFor="date" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                                            Actualmente
-                                        </label>
-                                    </div>
                                 </div>
                                 <div>
-                                    {formik.errors.date && formik.touched.date ? formik.errors.date : ""}
+                                    {formik.errors.company && formik.touched.company ? formik.errors.company : ""}
                                 </div>
                             </div>
+                            <div className='md:w-1/2'>
+                                <div>
+                                    <label htmlFor="page" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
+                                        Página de la empresa
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="page"
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        defaultValue={experience.page}
+                                        onChange={formik.handleChange}
+                                    />
+                                </div>
+                                <div>
+                                    {formik.errors.page && formik.touched.page ? formik.errors.page : ""}
+                                </div>
+                            </div>
+                        </div>
+                        <Dates setDate={(date) => formik.setFieldValue("date", date)} rangeDatePicker={true} />
+                        <div>
+                            {formik.errors.date && formik.touched.date ? formik.errors.date : ""}
                         </div>
                         <div>
                             {serverError && <Alert message={serverError} status={statusError} />}

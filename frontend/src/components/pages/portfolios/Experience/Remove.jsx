@@ -19,21 +19,21 @@ export const Remove = ({ id }) => {
         setLoading(true); // Iniciamos el estado de carga
         try {
             const token = localStorage.getItem('token');
-            const { status } = await ApiRequests(`${Global.url}${id}/delete/education`, "DELETE", undefined, false, token);
+            const { status } = await ApiRequests(`${Global.url}${id}/delete/experience`, "DELETE", undefined, false, token);
             if (status === 204) {
-                const updatedEducations = auth.portfolio.education.filter(edu => edu.id !== id);
+                const updatedExperiences = auth.portfolio.experience.filter(exp => exp.id !== id);
                 setAuth({
                     ...auth,
                     portfolio: {
                         ...auth.portfolio,
-                        education: updatedEducations
+                        experience: updatedExperiences
                     }
                 });
-                setServerError("Formación eliminada correctamente");
+                setServerError("Experiencia eliminada correctamente");
                 setStatusError("success");
                 setLoading(false);
             } else {
-                setServerError("Error al eliminar la formación");
+                setServerError("Error al eliminar la experiencia");
                 setStatusError("error");
                 setLoading(false);
             }
@@ -66,12 +66,12 @@ export const Remove = ({ id }) => {
                     <div className="text-center">
                         <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
                         <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                            ¿Estás seguro de que deseas eliminar esta formación?
+                            ¿Estás seguro de que deseas eliminar esta experiencia?
                         </h3>
 
                         {loading ? (
                             <div className="flex justify-center items-center">
-                                <div className="loader"></div> {/* Aquí puedes usar tu propio componente de loader */}
+                                <div className="loader"></div> 
                             </div>
                         ) : (
                             <div className="flex justify-center gap-4">

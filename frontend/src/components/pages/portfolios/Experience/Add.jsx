@@ -20,14 +20,12 @@ export const Add = () => {
   const [serverError, setServerError] = useState("");
   const [statusError, setStatusError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [date, setDate] = useState(null);
   const { auth, setAuth } = useAuth();
 
   useEffect(() => {
     if (statusError === "success") {
       formik.resetForm(); // Reinicia el formulario
     }
-    console.log(date);
   }, [statusError]);
 
   const formik = useFormik({
@@ -48,6 +46,7 @@ export const Add = () => {
     setServerError("");
     setStatusError("");
     let experience = form;
+    console.log(experience);
     try {
       const token = localStorage.getItem('token');
       const { data, status } = await ApiRequests(`${Global.url}${auth.portfolio.id}/experience`, "POST", experience, false, token);
@@ -140,7 +139,7 @@ export const Add = () => {
             </div>
           </div>
         </div>
-        <Dates setDate={(date) => formik.setFieldValue("date", date)} RangeDatePicker={true} />
+        <Dates setDate={(date) => formik.setFieldValue("date", date)} rangeDatePicker={true} />
         <div>
           {formik.errors.date && formik.touched.date ? formik.errors.date : ""}
         </div>

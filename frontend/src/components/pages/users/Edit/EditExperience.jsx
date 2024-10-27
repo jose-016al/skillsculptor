@@ -29,17 +29,17 @@ export const EdiExperience = () => {
                         <p>|</p>
                         <p>{item.date}</p>
                         {item.page ?
-                          <a href={item.page} className="mb-4 text-base font-normal text-blue-700" target="_blank" rel="noopener noreferrer">
+                          <a href={item.page} className="text-base font-normal text-blue-700" target="_blank" rel="noopener noreferrer">
                             {item.company}
                           </a>
                           :
-                          <p className="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">{item.company}</p>
+                          <p className="text-base font-normal text-gray-500 dark:text-gray-400">{item.company}</p>
                         }
                       </div>
                     </Accordion.Title>
                     <Accordion.Content>
                       <div className='flex justify-center space-x-4'>
-                        {/* <Update experience={item} /> */}
+                        <Update experience={item} />
                         <Remove id={item.id} />
                       </div>
                     </Accordion.Content>
