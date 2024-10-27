@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useAuth } from '../../../hooks/useAuth';
+import { useAuth } from '../../../../hooks/useAuth';
 import { useParams } from 'react-router-dom';
-import { useProfile } from '../../../hooks/useProfile';
-import image from '../../../assets/img/undraw_working_re_ddwy.svg';
+import { useProfile } from '../../../../hooks/useProfile';
+import image from '../../../../assets/img/undraw_working_re_ddwy.svg';
 import { Pagination } from "flowbite-react";
 
 export const Experience = () => {

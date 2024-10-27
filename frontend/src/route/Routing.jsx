@@ -13,11 +13,12 @@ import { DExperience } from '../components/pages/Default/DExperience'
 import { DProject } from '../components/pages/Default/DProject'
 import { Home } from '../components/pages/portfolios/Home'
 import { Education } from '../components/pages/portfolios/Education/Education.jsx'
-import { Experience } from '../components/pages/portfolios/Experience'
+import { Experience } from '../components/pages/portfolios/Experience/Experience.jsx'
 import { Project } from '../components/pages/portfolios/Project/Project'
 import { EditUser } from '../components/pages/users/Edit/EditUser'
 import { EditProject } from '../components/pages/users/Edit/EditProject.jsx'
 import { EdiEducation } from '../components/pages/users/Edit/EditEducation.jsx'
+import { EdiExperience } from '../components/pages/users/Edit/EditExperience.jsx'
 
 export const Routing = () => {
     return (
@@ -48,7 +49,7 @@ export const Routing = () => {
                         <Route path='edit/:userid/user' element={<EditUser />} />
                         <Route path='edit/:userid/portfolio' element={<EditUser />} />
                         <Route path='edit/:userid/education' element={<EdiEducation />} />
-                        <Route path='edit/:userid/experience' element={<EditUser />} />
+                        <Route path='edit/:userid/experience' element={<EdiExperience />} />
                         <Route path='edit/:userid/project' element={<EditProject />} />
                         <Route path='logout' element={<Logout />} />
                     </Route>

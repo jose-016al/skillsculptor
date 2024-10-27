@@ -5,11 +5,14 @@ import { useAuth } from '../../../../hooks/useAuth';
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Alert } from '../../../layout/Alert';
+import { Datepicker } from 'flowbite-react';
 import { Dates } from '../../../layout/Dates';
 
 const validationSchema = Yup.object().shape({
   title: Yup.string().required("El título es obligatorio"),
-  date: Yup.string().required("La fecha es obligatorio"),
+  date: Yup.string().required("Las fechas son obligatorios"),
+  company: Yup.string().required("La empresa es obligatoria"),
+  page: Yup.string().url("Debe ser un enlace válido").nullable(),
 });
 
 export const Add = () => {
@@ -24,12 +27,15 @@ export const Add = () => {
     if (statusError === "success") {
       formik.resetForm(); // Reinicia el formulario
     }
+    console.log(date);
   }, [statusError]);
 
   const formik = useFormik({
     initialValues: {
       title: "",
-      date: ""
+      date: "",
+      company: "",
+      page: ""
     },
     validationSchema,
     onSubmit: values => {
@@ -41,21 +47,21 @@ export const Add = () => {
   const add = async (form) => {
     setServerError("");
     setStatusError("");
-    let education = form;
+    let experience = form;
     try {
       const token = localStorage.getItem('token');
-      const { data, status } = await ApiRequests(`${Global.url}${auth.portfolio.id}/education`, "POST", education, false, token);
+      const { data, status } = await ApiRequests(`${Global.url}${auth.portfolio.id}/experience`, "POST", experience, false, token);
       if (status === 201) {
         const updatedUser = {
           ...auth,
           portfolio: {
             ...auth.portfolio,
-            education: [...auth.portfolio.education, data] // Añadir el nuevo proyecto al array
+            experience: [...auth.portfolio.experience, data] // Añadir el nuevo proyecto al array
           }
         };
         setAuth(updatedUser);
 
-        setServerError("Formación añadida correctamente");
+        setServerError("Experiencia añadida correctamente");
         setStatusError("success");
         setLoading(false);
       } else if (status === 403) {
@@ -70,19 +76,17 @@ export const Add = () => {
     }
   };
 
-
-
   return (
     <div className='w-full'>
       <form className="relative py-4 px-5" onSubmit={formik.handleSubmit}>
-        <h1 className="text-center text-2xl font-semibold mb-4">Añadir formación</h1>
+        <h1 className="text-center text-2xl font-semibold mb-4">Añadir experiencia</h1>
         {loading &&
           <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 backdrop-blur-sm z-10">
             <div className="loader"></div>
           </div>
         }
-        <div className='flex flex-col md:flex-row md:space-x-4'>
-          <div className='md:w-1/2'>
+        <div className='flex flex-col md:flex-row'>
+          <div className='w-full'>
             <div>
               <label htmlFor="title" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
                 Titulo
@@ -99,12 +103,46 @@ export const Add = () => {
               {formik.errors.title && formik.touched.title ? formik.errors.title : ""}
             </div>
           </div>
+        </div>
+        <div className='flex flex-col md:flex-row md:space-x-4'>
           <div className='md:w-1/2'>
-            <Dates setDate={(date) => formik.setFieldValue("date", date)} RangeDatePicker={false} />
             <div>
-              {formik.errors.date && formik.touched.date ? formik.errors.date : ""}
+              <label htmlFor="company" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
+                Empresa
+              </label>
+              <input
+                type="text"
+                name="company"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                value={formik.values.company}
+                onChange={formik.handleChange}
+              />
+            </div>
+            <div>
+              {formik.errors.company && formik.touched.company ? formik.errors.company : ""}
             </div>
           </div>
+          <div className='md:w-1/2'>
+            <div>
+              <label htmlFor="page" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
+                Página de la empresa
+              </label>
+              <input
+                type="text"
+                name="page"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                value={formik.values.page}
+                onChange={formik.handleChange}
+              />
+            </div>
+            <div>
+              {formik.errors.page && formik.touched.page ? formik.errors.page : ""}
+            </div>
+          </div>
+        </div>
+        <Dates setDate={(date) => formik.setFieldValue("date", date)} RangeDatePicker={true} />
+        <div>
+          {formik.errors.date && formik.touched.date ? formik.errors.date : ""}
         </div>
         <div>
           {serverError && <Alert message={serverError} status={statusError} />}
