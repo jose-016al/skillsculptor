@@ -1,14 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Pagination } from "flowbite-react";
-import image from '../../../assets/img/undraw_organizing_projects_re_9p1k.svg';
-import { Accordion } from "flowbite-react";
+import twitch from '../../../assets/img/twitch.png';
+import portfolio from '../../../assets/img/portfolio.png';
+import platform from '../../../assets/img/platform.png';
 
 export const DProject = () => {
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
-  const [currentItems, setCurrentItems] = useState([]);
-  const [totalPages, setTotalPages] = useState(0);
 
   const projectsItems = [
     {
@@ -16,19 +10,21 @@ export const DProject = () => {
       description: 'Un clon de la popular plataforma de streaming Twitch, que permite a los usuarios transmitir y ver contenido en vivo. Incluye funciones de chat en tiempo real y seguimiento de usuarios.',
       demo: 'https://twitch-clone-demo.example.com',
       github: 'https://github.com/usuario/twitch-clone',
-      image: 'iamgen'
+      image: twitch
     },
     {
       title: 'Portfolio Personal',
       description: 'Un sitio web personal diseñado para mostrar proyectos y habilidades. Incluye una sección de contacto y una galería de proyectos destacados.',
       demo: 'https://mi-portfolio.example.com',
-      github: ''
+      github: '',
+      image: portfolio
     },
     {
       title: 'E-commerce Platform',
       description: 'Plataforma de comercio electrónico que permite a los usuarios comprar y vender productos. Incluye gestión de inventario y pasarelas de pago.',
       demo: '',
-      github: 'https://github.com/usuario/ecommerce-platform'
+      github: 'https://github.com/usuario/ecommerce-platform',
+      image: platform
     },
     {
       title: 'Blog de Viajes',
@@ -56,74 +52,27 @@ export const DProject = () => {
     },
   ];
 
-
-  useEffect(() => {
-    const total = projectsItems.length;
-    setTotalPages(Math.ceil(total / itemsPerPage));
-    const items = projectsItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-    setCurrentItems(items);
-  }, [currentPage, itemsPerPage]);
-
-  const onPageChange = (page) => setCurrentPage(page);
-
   return (
-    <>
-      <div className='flex flex-row-reverse items-center justify-evenly px-5 mt-20 md:space-x-5'>
-        <div className="w-2/5 hidden md:flex items-center justify-center">
-          <img
-            src={image}
-            className="md:max-w-md w-full h-full object-cover"
-            alt="education-image"
-          />
-        </div>
-
-        <div className='w-full md:w-1/2'>
-          <Accordion>
-            {currentItems.map((item, index) => (
-              <Accordion.Panel key={index}>
-                <Accordion.Title>{item.title}</Accordion.Title>
-                <Accordion.Content>
-                  <div className='flex flex-col-reverse items-center'>
-                    <p>{item.description}</p>
-                    {item.image &&
-                      <img
-                        src={item.image}
-                        className="mb-5 w-3/4 lg:w-1/3  object-cover"
-                        alt="project-image"
-                      />
-                    }
-                  </div>
-                  <div className='mt-3 flex justify-evenly'>
-                    {item.demo &&
-                      <a href={item.demo} className='text-white-100  py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg bg-blue-700 hover:bg-blue-500 focus:z-10 focus:ring-4 focus:ring-blue-500' target="_blank" rel="noopener noreferrer">
-                        Demo
-                      </a>
-                    }
-                    {item.github &&
-                      <a href={item.github} className='text-white-100  py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg bg-blue-700 hover:bg-blue-500 focus:z-10 focus:ring-4 focus:ring-blue-500' target="_blank" rel="noopener noreferrer">
-                        GitHub
-                      </a>
-                    }
-                  </div>
-                </Accordion.Content>
-              </Accordion.Panel>
-            ))}
-          </Accordion>
-
-          {totalPages > 1 &&
-            <div className="flex justify-center mt-5">
-              <Pagination
-                layout="navigation"
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={onPageChange}
-                nextLabel="Siguiente"
-                previousLabel="Anterior"
-              />
-            </div>
+    <div className='mt-20 mb-10 flex flex-wrap justify-center items-center'>
+      {projectsItems.map((item, index) =>
+        <div key={index} className="max-w-sm m-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+          {item.image &&
+            <img className="rounded-t-lg w-full h-64 object-cover" src={item.image} alt="" />
           }
+          <div className="p-5">
+            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{item.title}</h5>
+            <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{item.description}</p>
+            <div className='flex flex-col-reverse md:flex-row justify-evenly'>
+              {item.demo &&
+                <a href={item.demo} className='inline-flex items-center my-3 md:my-0 px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'>Demo</a>
+              }
+              {item.github &&
+                <a href={item.github} className='inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'>GitHub</a>
+              }
+            </div>
+          </div>
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
 };
