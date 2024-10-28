@@ -15,7 +15,7 @@ export const Nav = () => {
   const { userid } = useParams();
   const location = useLocation();
   const [openMenu, setOpenMenu] = useState(false);
-  useTheme();
+  const { primaryColor, theme } = useTheme();
 
   const ref = useClickAway(() => {
     setOpenMenu(false);
@@ -66,7 +66,7 @@ export const Nav = () => {
               </NavLink>
             </Dropdown>
             :
-            <NavLink to="/login" className="p-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+            <NavLink to="/login" className={`p-2 text-white bg-${primaryColor} hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800`}>
               Login
             </NavLink>
           }
@@ -88,7 +88,7 @@ export const Nav = () => {
                 <li>
                   <NavLink to={`/profiles/home/${userid}`} className={({ isActive }) =>
                     isActive
-                      ? 'text-blue-500 font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
+                      ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                       : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                   }>
                     Home
@@ -97,7 +97,7 @@ export const Nav = () => {
                 <li>
                   <NavLink to={`/profiles/education/${userid}`} className={({ isActive }) =>
                     isActive
-                      ? 'text-blue-500 font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
+                      ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                       : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                   }>
                     Educación
@@ -106,7 +106,7 @@ export const Nav = () => {
                 <li>
                   <NavLink to={`/profiles/experience/${userid}`} className={({ isActive }) =>
                     isActive
-                      ? 'text-blue-500 font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
+                      ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                       : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                   }>
                     Experiencia
@@ -115,7 +115,7 @@ export const Nav = () => {
                 <li>
                   <NavLink to={`/profiles/project/${userid}`} className={({ isActive }) =>
                     isActive
-                      ? 'text-blue-500 font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
+                      ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                       : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                   }>
                     Proyectos
@@ -128,7 +128,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/profiles/home`} className={({ isActive }) =>
                       isActive
-                        ? 'text-blue-500 font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
+                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Home
@@ -137,7 +137,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/profiles/education`} className={({ isActive }) =>
                       isActive
-                        ? 'text-blue-500 font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
+                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Educación
@@ -146,7 +146,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/profiles/experience`} className={({ isActive }) =>
                       isActive
-                        ? 'text-blue-500 font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
+                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Experiencia
@@ -155,7 +155,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/profiles/project`} className={({ isActive }) =>
                       isActive
-                        ? 'text-blue-500 font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
+                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Proyectos
@@ -167,7 +167,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/`} className={({ isActive }) =>
                       isActive
-                        ? 'text-blue-500 font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
+                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Home
@@ -176,7 +176,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/education`} className={({ isActive }) =>
                       isActive
-                        ? 'text-blue-500 font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
+                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Educación
@@ -185,7 +185,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/experience`} className={({ isActive }) =>
                       isActive
-                        ? 'text-blue-500 font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
+                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Experiencia
@@ -194,7 +194,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/project`} className={({ isActive }) =>
                       isActive
-                        ? 'text-blue-500 font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
+                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Proyectos

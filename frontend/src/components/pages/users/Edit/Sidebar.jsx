@@ -9,20 +9,22 @@ import { useAuth } from '../../../../hooks/useAuth';
 import { useClickAway } from '@uidotdev/usehooks';
 import { TiThMenu } from "react-icons/ti";
 import { IoCloseSharp } from "react-icons/io5";
+import { useTheme } from '../../../../hooks/useTheme';
 
 export const Sidebar = () => {
 
     const { auth } = useAuth();
     const location = useLocation();
     const [openSidebar, setOpenSidebar] = useState(false);
+    const { primaryColor } = useTheme();
 
     const ref = useClickAway(() => {
         setOpenSidebar(false);
-      });
-    
-      useEffect(() => {
+    });
+
+    useEffect(() => {
         setOpenSidebar(false);
-      }, [location]);
+    }, [location]);
 
     const handleToggleSidebar = () => {
         setOpenSidebar(!openSidebar);
@@ -42,13 +44,13 @@ export const Sidebar = () => {
 
             <aside ref={ref} id="default-sidebar" aria-label="Sidebar"
                 className={`fixed h-full top-0 left-0 z-20 md:z-10 md:relative w-64 transition-transform transform  ${openSidebar ? 'translate-x-0' : ' -translate-x-full'} md:translate-x-0`}
-                >
+            >
                 <div className="h-full px-3 py-4 bg-gray-50 dark:bg-gray-800">
                     <ul className="space-y-2 font-medium">
                         <li>
                             <NavLink to={`/user/edit/${auth.id}/user`} className={({ isActive }) =>
                                 isActive
-                                    ? 'text-blue-500 font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
+                                    ? `text-${primaryColor} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
                                     : 'text-white-100 flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
                             }>
                                 <HiUser className='text-2xl' />
@@ -58,7 +60,7 @@ export const Sidebar = () => {
                         <li>
                             <NavLink to={`/user/edit/${auth.id}/portfolio`} className={({ isActive }) =>
                                 isActive
-                                    ? 'text-blue-500 font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
+                                    ? `text-${primaryColor} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
                                     : 'text-white-100 flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
                             }>
                                 <ImProfile className='text-2xl' />
@@ -68,7 +70,7 @@ export const Sidebar = () => {
                         <li>
                             <NavLink to={`/user/edit/${auth.id}/education`} className={({ isActive }) =>
                                 isActive
-                                    ? 'text-blue-500 font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
+                                    ? `text-${primaryColor} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
                                     : 'text-white-100 flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
                             }>
                                 <IoSchool className='text-2xl' />
@@ -78,7 +80,7 @@ export const Sidebar = () => {
                         <li>
                             <NavLink to={`/user/edit/${auth.id}/experience`} className={({ isActive }) =>
                                 isActive
-                                    ? 'text-blue-500 font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
+                                    ? `text-${primaryColor} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
                                     : 'text-white-100 flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
                             }>
                                 <MdWork className='text-2xl' />
@@ -88,13 +90,13 @@ export const Sidebar = () => {
                         <li>
                             <NavLink to={`/user/edit/${auth.id}/project`} className={({ isActive }) =>
                                 isActive
-                                    ? 'text-blue-500 font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
+                                    ? `text-${primaryColor} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
                                     : 'text-white-100 flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
                             }>
                                 <PiProjectorScreenChartFill className='text-2xl' />
                                 <span className="ms-3">Proyectos</span>
                             </NavLink>
-                        </li>                        
+                        </li>
                     </ul>
                 </div>
             </aside>

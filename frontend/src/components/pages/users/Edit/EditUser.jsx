@@ -9,6 +9,7 @@ import * as Yup from "yup";
 import { Alert } from '../../../layout/Alert';
 import { useNavigate } from 'react-router-dom';
 import avatar from '../../../../assets/img/default.png';
+import { useTheme } from '../../../../hooks/useTheme';
 
 const FILE_SIZE = 1024 * 1024; // 1024 KB
 const SUPPORTED_FORMATS = ["image/jpeg", "image/png"];
@@ -42,6 +43,11 @@ export const EditUser = () => {
   const [statusError, setStatusError] = useState("");
   const [loading, setLoading] = useState(false);
   const { auth, setAuth } = useAuth();
+  const { primaryColor, theme } = useTheme();
+
+  useEffect(() => {
+    console.log(auth.theme.color);
+  }, [auth]);
 
   const formik = useFormik({
     initialValues: {
@@ -69,13 +75,21 @@ export const EditUser = () => {
       last_name: form.last_name || auth.last_name,
       email: form.email || auth.email,
       password: form.password || "", // Si la contraseña está vacía, no se envía
+      theme: form.theme
     };
 
     try {
       const token = localStorage.getItem('token');
       const { data, status } = await ApiRequests(`${Global.url}${auth.id}/edit/user`, "PUT", user, false, token);
       if (status === 200) {
-        const updatedUser = { ...auth, ...data };
+        const updatedUser = {
+          ...auth,
+          ...data,
+          theme: {
+            ...auth.theme,
+            ...data.theme
+          }
+        };
         setAuth(updatedUser);
 
         /* Subir imagen */
@@ -85,7 +99,14 @@ export const EditUser = () => {
           formData.append("image", fileInput.files[0]);
           const { data, status } = await ApiRequests(`${Global.url}${auth.id}/upload`, "POST", formData, true, token);
           if (status === 201) {
-            const updatedUser = { ...auth, ...data };
+            const updatedUser = {
+              ...auth,
+              ...data,
+              theme: {
+                ...auth.theme,
+                ...data.theme
+              }
+            };
             setAuth(updatedUser);
           } else {
             setServerError("No se ha podido subir la imagen");
@@ -93,6 +114,8 @@ export const EditUser = () => {
           }
         }
 
+        console.log(updatedUser);
+        console.log(auth);
         setServerError("Usuario actualizado");
         setStatusError("success");
         setLoading(false);
@@ -133,7 +156,7 @@ export const EditUser = () => {
           <div className='flex flex-col md:flex-row md:space-x-4'>
             <div className='md:w-1/2'>
               <div>
-                <ThemeMode />
+                <ThemeMode setThemeChange={(theme) => formik.setFieldValue("theme", theme)} />
               </div>
               <div>
                 <label className="block my-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="image">
@@ -152,11 +175,16 @@ export const EditUser = () => {
               </div>
             </div>
             <div className='md:w-1/2'>
-              <div className='w-2/5 h-full mx-auto mt-5 md:mt-0'>
-                {auth.image == 'default.png' && <img className="md:max-w-md w-full h-full object-cover rounded-full" src={avatar} alt="Bordered avatar" />}
-                {auth.image != 'default.png' && <img className="md:max-w-md w-full h-full object-cover rounded-full" src={`${Global.url}avatar/${auth.image}`} alt="Bordered avatar" />}
+              <div className='w-40 h-40 mx-auto mt-5 md:mt-0'>
+                {auth.image === 'default.png' && (
+                  <img className="w-full h-full object-cover rounded-full" src={avatar} alt="Bordered avatar"/>
+                )}
+                {auth.image !== 'default.png' && (
+                  <img className="w-full h-full object-cover rounded-full" src={`${Global.url}avatar/${auth.image}`} alt="Bordered avatar"/>
+                )}
               </div>
             </div>
+
           </div>
           <div className='flex flex-col md:flex-row md:space-x-4'>
             <div className='md:w-1/2'>
@@ -272,7 +300,7 @@ export const EditUser = () => {
           <div className='mt-5'>
             <button
               type="submit"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+              className={`text-white bg-${primaryColor} hover:bg-gray-800  focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center`}>
               Actualizar
             </button>
           </div>

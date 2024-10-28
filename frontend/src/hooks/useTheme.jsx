@@ -1,14 +1,25 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from './useAuth';
 
 export const useTheme = () => {
 
-    const [theme, setTheme] = useState(() => {
-        // Leer el tema desde localStorage o usar 'dark' por defecto
-        return localStorage.getItem('theme') || 'dark';
-    });
+    const {auth} = useAuth();
+    // Establece el tema y el color desde 'auth' o usa los valores por defecto
+    const [theme, setTheme] = useState(() => auth?.theme?.mode || 'dark');
+    const [primaryColor, setPrimaryColor] = useState(() => auth?.theme?.color || 'red-700');
     const [switch1, setSwitch1] = useState(theme === 'dark');
 
+    // Colores disponibles
+    const availableColors = [
+        'blue-700', 
+        'green-700', 
+        'red-700', 
+        'pink-600', 
+        'orange-600', 
+        'yellow-400'];
+
     useEffect(() => {
+        // Actualiza la clase del tema en el HTML
         const htmlElement = document.querySelector('html');
         const customNavElement = document.querySelector('#nav-custom'); 
 
@@ -23,16 +34,18 @@ export const useTheme = () => {
             customNavElement?.classList.remove('nav-custom-dark');
             setSwitch1(false);
         }
-
-        // Guardar el tema actual en localStorage
-        localStorage.setItem('theme', theme);
-
     }, [theme]);
 
     const changeTheme = () => {
+        // Cambia entre 'light' y 'dark'
         setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
     };
 
-    // Devolver un array o un objeto con los valores que quieres utilizar en el componente principal
-    return { theme, switch1, changeTheme };
+    const changeColor = (color) => {
+        // Cambia el color primario
+        setPrimaryColor(color);
+    };
+
+    // Devolver el estado y la lista de colores disponibles
+    return { theme, primaryColor, switch1, changeTheme, changeColor, availableColors };
 };
