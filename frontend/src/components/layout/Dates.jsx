@@ -88,11 +88,12 @@ export const Dates = ({ setDate, rangeDatePicker }) => {
         return (
             <div className='flex flex-col md:flex-row md:space-x-4'>
                 <div className='md:w-1/2'>
-                    <div>
+                    <div >
                         <label htmlFor="start-date" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
                             Fecha de inicio
                         </label>
                         <Datepicker
+                            id="date-color"
                             language="es-ES"
                             labelTodayButton="Hoy"
                             labelClearButton="Limpiar"
@@ -112,6 +113,7 @@ export const Dates = ({ setDate, rangeDatePicker }) => {
                             Fecha de fin
                         </label>
                         <Datepicker
+                            id="date-color"
                             language="es-ES"
                             labelTodayButton="Hoy"
                             labelClearButton="Limpiar"
@@ -127,24 +129,13 @@ export const Dates = ({ setDate, rangeDatePicker }) => {
 
                     <div className='flex space-x-2 items-center'>
                         <input
-                            type="checkbox"
-                            id="date"
-                            name='date'
                             checked={isChecked}
                             onChange={handleCheckboxChange}
-                            className="hidden"
+                            type="checkbox"
+                            className={`w-4 h-4 ${primaryColor.text} bg-gray-100 border-gray-300 rounded ${primaryColor.focusRing} dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600`}
                         />
-                        <label htmlFor="date" className="flex items-center cursor-pointer">
-                            <span className={`w-5 h-5 inline-block rounded border-2 border-gray-300 mr-2 
-                            ${isChecked ? primaryColor.bg : 'bg-white'} 
-                            ${isChecked ? 'border-transparent' : ''}`}>
-                                {isChecked && (
-                                    <FaCheck className={`w-full h-full text-white`} /> // Ícono de verificación
-                                )}
-                            </span>
-                            <span className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                                Actualmente
-                            </span>
+                        <label htmlFor="currently" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Actualmente
                         </label>
                     </div>
                 </div>
@@ -157,6 +148,7 @@ export const Dates = ({ setDate, rangeDatePicker }) => {
                     Fecha de finalización
                 </label>
                 <Datepicker
+                    id="date-color"
                     language="es-ES"
                     labelTodayButton="Hoy"
                     labelClearButton="Limpiar"
@@ -170,24 +162,13 @@ export const Dates = ({ setDate, rangeDatePicker }) => {
                 />
                 <div className='flex space-x-2 items-center'>
                     <input
-                        type="checkbox"
-                        id="date"
-                        name='date'
                         checked={isChecked}
                         onChange={handleCheckboxChange}
-                        className="hidden"
+                        type="checkbox"
+                        className={`w-4 h-4 ${primaryColor.text} bg-gray-100 border-gray-300 rounded ${primaryColor.focusRing} dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600`}
                     />
-                    <label htmlFor="date" className="flex items-center cursor-pointer">
-                        <span className={`w-5 h-5 inline-block rounded border-2 border-gray-300 mr-2 
-                            ${isChecked ? primaryColor.bg : 'bg-white'} 
-                            ${isChecked ? 'border-transparent' : ''}`}>
-                            {isChecked && (
-                                <FaCheck className={`w-full h-full text-white`} /> // Ícono de verificación
-                            )}
-                        </span>
-                        <span className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Actualmente
-                        </span>
+                    <label htmlFor="currently" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Actualmente
                     </label>
                 </div>
             </div>

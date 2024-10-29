@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 @import url('https://fonts.googleapis.com/css?family=Fjalla+One');
-/* @import 'react-datepicker/dist/react-datepicker.css'; */
 
 /* -----ESTILOS GLOBALES----- */
 
@@ -66,29 +65,6 @@ body {
 @keyframes swing3 {
     0% { transform: rotate(-3deg); }
     100% { transform: rotate(8deg); }
-}
-
-
-/* ScroolBar---------- */
-::-webkit-scrollbar {
-    width: 7px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-    background:  rgba(17, 24, 39);
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.5);
-    border-radius: 12px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-    background-color: white;
-    border-radius: 12px;
 }
 
 /* ====================Main==================== */

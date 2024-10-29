@@ -2,7 +2,6 @@ import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../../../hooks/useAuth';
 import { Nav } from '../Nav';
 import { useTheme } from '../../../hooks/useTheme';
-import { ScrollBar } from '../ScrollBar';
 
 export const LayoutPrivate = () => {
 
@@ -11,7 +10,6 @@ export const LayoutPrivate = () => {
 
     return (
         <>
-            <ScrollBar />
             <Nav />
             {loading &&
                 <div className="absolute inset-0 flex flex-col justify-center items-center bg-gray-800 bg-opacity-50 backdrop-blur-sm z-50">
