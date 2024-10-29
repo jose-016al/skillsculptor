@@ -11,6 +11,7 @@ import { useTheme } from '../../hooks/useTheme';
 import avatar from '../../assets/img/default.png';
 
 export const Nav = () => {
+
   const { auth } = useAuth();
   const { userid } = useParams();
   const location = useLocation();
@@ -32,7 +33,7 @@ export const Nav = () => {
 
   return (
     <div ref={ref}>
-      <Navbar fluid rounded className="fixed top-0 z-20 w-full backdrop-blur-xl" id='nav-custom'>
+      <Navbar fluid rounded className="fixed top-0 z-20 w-full backdrop-blur-xl" style={{ backgroundColor: theme === 'dark' ? 'rgba(17, 24, 39, 0.5)' : 'rgba(255, 255, 255, 0.1)' }}>
         <NavLink to={`/`}>
           <span className="self-center whitespace-nowrap text-2xl font-semibold dark:text-white">SkillsCulptor</span>
         </NavLink>
@@ -66,7 +67,7 @@ export const Nav = () => {
               </NavLink>
             </Dropdown>
             :
-            <NavLink to="/login" className={`p-2 text-white bg-${primaryColor} hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800`}>
+            <NavLink to="/login" className={`p-2 text-white ${primaryColor.bg} ${primaryColor.hover} focus:ring-4 ${primaryColor.focusRing} font-medium rounded-lg text-sm me-2 focus:outline-none`}>
               Login
             </NavLink>
           }
@@ -88,7 +89,7 @@ export const Nav = () => {
                 <li>
                   <NavLink to={`/profiles/home/${userid}`} className={({ isActive }) =>
                     isActive
-                      ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
+                      ? `${primaryColor.text} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                       : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                   }>
                     Home
@@ -97,7 +98,7 @@ export const Nav = () => {
                 <li>
                   <NavLink to={`/profiles/education/${userid}`} className={({ isActive }) =>
                     isActive
-                      ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
+                      ? `${primaryColor.text} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                       : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                   }>
                     Educación
@@ -106,7 +107,7 @@ export const Nav = () => {
                 <li>
                   <NavLink to={`/profiles/experience/${userid}`} className={({ isActive }) =>
                     isActive
-                      ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
+                      ? `${primaryColor.text} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                       : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                   }>
                     Experiencia
@@ -115,7 +116,7 @@ export const Nav = () => {
                 <li>
                   <NavLink to={`/profiles/project/${userid}`} className={({ isActive }) =>
                     isActive
-                      ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
+                      ? `${primaryColor.text} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                       : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                   }>
                     Proyectos
@@ -128,7 +129,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/profiles/home`} className={({ isActive }) =>
                       isActive
-                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
+                        ? `${primaryColor.text} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Home
@@ -137,7 +138,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/profiles/education`} className={({ isActive }) =>
                       isActive
-                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
+                        ? `${primaryColor.text} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Educación
@@ -146,7 +147,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/profiles/experience`} className={({ isActive }) =>
                       isActive
-                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
+                        ? `${primaryColor.text} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Experiencia
@@ -155,7 +156,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/profiles/project`} className={({ isActive }) =>
                       isActive
-                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
+                        ? `${primaryColor.text} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Proyectos
@@ -167,7 +168,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/`} className={({ isActive }) =>
                       isActive
-                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
+                        ? `${primaryColor.text} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Home
@@ -176,7 +177,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/education`} className={({ isActive }) =>
                       isActive
-                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
+                        ? `${primaryColor.text} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Educación
@@ -185,7 +186,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/experience`} className={({ isActive }) =>
                       isActive
-                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
+                        ? `${primaryColor.text} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Experiencia
@@ -194,7 +195,7 @@ export const Nav = () => {
                   <li>
                     <NavLink to={`/project`} className={({ isActive }) =>
                       isActive
-                        ? `text-${primaryColor} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
+                        ? `${primaryColor.text} font-bold block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700`
                         : 'text-white-100 block py-1 px-2 transition-colors duration-300 focus:outline-none rounded-lg hover:bg-gray-400 focus:z-10 focus:ring-4 focus:ring-gray-400 dark:focus:ring-gray-700 dark:border-gray-700 dark:hover:bg-gray-700'
                     }>
                       Proyectos

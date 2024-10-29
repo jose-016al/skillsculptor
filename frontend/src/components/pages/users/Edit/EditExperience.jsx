@@ -1,14 +1,15 @@
 import { Sidebar } from './Sidebar'
-import { Global } from '../../../../helpers/Global';
 import { useAuth } from '../../../../hooks/useAuth';
 import { Add } from '../../portfolios/Experience/Add';
 import { Accordion } from "flowbite-react";
 import { Remove } from '../../portfolios/Experience/Remove';
 import { Update } from '../../portfolios/Experience/Update';
+import { useTheme } from '../../../../hooks/useTheme';
 
 export const EdiExperience = () => {
 
   const { auth } = useAuth();
+  const { primaryColor } = useTheme();
 
   return (
     <div className='md:container mx-3 mb-10 md:mx-auto flex flex-col md:flex-row mt-20 border border-gray-300 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900'>
@@ -29,7 +30,7 @@ export const EdiExperience = () => {
                         <p>|</p>
                         <p>{item.date}</p>
                         {item.page ?
-                          <a href={item.page} className="text-base font-normal text-blue-700" target="_blank" rel="noopener noreferrer">
+                          <a href={item.page} className={`mb-4 text-base font-normal ${primaryColor.text}`} target="_blank" rel="noopener noreferrer">
                             {item.company}
                           </a>
                           :

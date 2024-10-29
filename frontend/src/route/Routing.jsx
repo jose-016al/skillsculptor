@@ -20,43 +20,46 @@ import { EditProject } from '../components/pages/users/Edit/EditProject.jsx'
 import { EdiEducation } from '../components/pages/users/Edit/EditEducation.jsx'
 import { EdiExperience } from '../components/pages/users/Edit/EditExperience.jsx'
 import { EditPortfolio } from '../components/pages/users/Edit/EditPortfolio.jsx'
+import { ThemeProvider } from '../context/ThemeProvider.jsx'
 
 export const Routing = () => {
     return (
         <BrowserRouter>
             <AuthProvider>
-                <Routes>
-                    <Route path='/profiles' element={<Layout />}>
-                        <Route index element={<Home />} />
-                        <Route path='home/:userid?' element={<Home />} />
-                        <Route path='education/:userid?' element={<Education />} />
-                        <Route path='experience/:userid?' element={<Experience />} />
-                        <Route path='project/:userid?' element={<Project />} />
-                    </Route>
+                <ThemeProvider>
+                    <Routes>
+                        <Route path='/profiles' element={<Layout />}>
+                            <Route index element={<Home />} />
+                            <Route path='home/:userid?' element={<Home />} />
+                            <Route path='education/:userid?' element={<Education />} />
+                            <Route path='experience/:userid?' element={<Experience />} />
+                            <Route path='project/:userid?' element={<Project />} />
+                        </Route>
 
-                    {/* Cuando no existe un usuario logueado */}
-                    <Route path='/' element={<LayoutPublic />}>
-                        <Route index element={<DHome />} />
-                        <Route path='education' element={<DEducation />} />
-                        <Route path='experience' element={<DExperience />} />
-                        <Route path='project' element={<DProject />} />
-                        <Route path='login' element={<Login />} />
-                        <Route path='register' element={<Register />} />
-                    </Route>
+                        {/* Cuando no existe un usuario logueado */}
+                        <Route path='/' element={<LayoutPublic />}>
+                            <Route index element={<DHome />} />
+                            <Route path='education' element={<DEducation />} />
+                            <Route path='experience' element={<DExperience />} />
+                            <Route path='project' element={<DProject />} />
+                            <Route path='login' element={<Login />} />
+                            <Route path='register' element={<Register />} />
+                        </Route>
 
-                    {/* Usuarios logueados */}
-                    <Route path='/user' element={<LayoutPrivate />}>
-                        <Route index element={<Home />} />
-                        <Route path='edit/:userid/user' element={<EditUser />} />
-                        <Route path='edit/:userid/portfolio' element={<EditPortfolio />} />
-                        <Route path='edit/:userid/education' element={<EdiEducation />} />
-                        <Route path='edit/:userid/experience' element={<EdiExperience />} />
-                        <Route path='edit/:userid/project' element={<EditProject />} />
-                        <Route path='logout' element={<Logout />} />
-                    </Route>
+                        {/* Usuarios logueados */}
+                        <Route path='/user' element={<LayoutPrivate />}>
+                            <Route index element={<Home />} />
+                            <Route path='edit/:userid/user' element={<EditUser />} />
+                            <Route path='edit/:userid/portfolio' element={<EditPortfolio />} />
+                            <Route path='edit/:userid/education' element={<EdiEducation />} />
+                            <Route path='edit/:userid/experience' element={<EdiExperience />} />
+                            <Route path='edit/:userid/project' element={<EditProject />} />
+                            <Route path='logout' element={<Logout />} />
+                        </Route>
 
-                    <Route path='*' element={<Error />} />
-                </Routes>
+                        <Route path='*' element={<Error />} />
+                    </Routes>
+                </ThemeProvider>
             </AuthProvider>
         </BrowserRouter>
     )

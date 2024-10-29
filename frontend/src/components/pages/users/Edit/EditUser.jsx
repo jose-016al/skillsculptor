@@ -141,7 +141,7 @@ export const EditUser = () => {
   };
 
   return (
-    <div className='md:container mx-3 md:mx-auto flex flex-col md:flex-row mt-20 border border-gray-300 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900'>
+    <div className='md:container mb-10 mx-3 md:mx-auto flex flex-col md:flex-row mt-20 border border-gray-300 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900'>
       <div>
         <Sidebar />
       </div>
@@ -149,8 +149,9 @@ export const EditUser = () => {
         <form className="relative py-4 px-5" onSubmit={formik.handleSubmit}>
           <h1 className="text-center text-2xl font-semibold mb-4">Editar usuario</h1>
           {loading &&
-            <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 backdrop-blur-sm z-10">
-              <div className="loader"></div>
+            <div className="absolute inset-0 flex flex-col justify-center items-center bg-gray-800 bg-opacity-50 backdrop-blur-sm z-10">
+              <div className={`loader border-8 ${primaryColor.border}`}></div>
+              <p className='text-center'>Reescribiendo la historia... ✍️</p>
             </div>
           }
           <div className='flex flex-col md:flex-row md:space-x-4'>
@@ -166,7 +167,7 @@ export const EditUser = () => {
                   type="file"
                   name='image'
                   id='file'
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                   onChange={handleImageChange}
                 />
               </div>
@@ -177,10 +178,10 @@ export const EditUser = () => {
             <div className='md:w-1/2'>
               <div className='w-40 h-40 mx-auto mt-5 md:mt-0'>
                 {auth.image === 'default.png' && (
-                  <img className="w-full h-full object-cover rounded-full" src={avatar} alt="Bordered avatar"/>
+                  <img className="w-full h-full object-cover rounded-full" src={avatar} alt="Bordered avatar" />
                 )}
                 {auth.image !== 'default.png' && (
-                  <img className="w-full h-full object-cover rounded-full" src={`${Global.url}avatar/${auth.image}`} alt="Bordered avatar"/>
+                  <img className="w-full h-full object-cover rounded-full" src={`${Global.url}avatar/${auth.image}`} alt="Bordered avatar" />
                 )}
               </div>
             </div>
@@ -195,13 +196,10 @@ export const EditUser = () => {
                 <input
                   type="text"
                   name="name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                   defaultValue={auth.name}
                   onChange={formik.handleChange}
                 />
-              </div>
-              <div>
-                {formik.errors.name && formik.touched.name ? formik.errors.name : ""}
               </div>
             </div>
             <div className='md:w-1/2'>
@@ -212,13 +210,10 @@ export const EditUser = () => {
                 <input
                   type="text"
                   name="last_name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                   defaultValue={auth.last_name}
                   onChange={formik.handleChange}
                 />
-              </div>
-              <div>
-                {formik.errors.last_name && formik.touched.last_name ? formik.errors.last_name : ""}
               </div>
             </div>
           </div>
@@ -231,7 +226,7 @@ export const EditUser = () => {
                 <input
                   type="email"
                   name="email"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                   defaultValue={auth.email}
                   onChange={formik.handleChange}
                 />
@@ -248,7 +243,7 @@ export const EditUser = () => {
                 <input
                   type="email"
                   name="emailrepeat"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                   defaultValue={auth.email}
                   onChange={formik.handleChange}
                 />
@@ -267,7 +262,7 @@ export const EditUser = () => {
                 <input
                   type="password"
                   name="password"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                   value={formik.values.password}
                   onChange={formik.handleChange}
                 />
@@ -284,7 +279,7 @@ export const EditUser = () => {
                 <input
                   type="password"
                   name="passwordrepeat"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                   value={formik.values.passwordrepeat}
                   onChange={formik.handleChange}
                 />
@@ -300,7 +295,7 @@ export const EditUser = () => {
           <div className='mt-5'>
             <button
               type="submit"
-              className={`text-white bg-${primaryColor} hover:bg-gray-800  focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center`}>
+              className={`text-white ${primaryColor.bg} ${primaryColor.hover}  focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center`}>
               Actualizar
             </button>
           </div>

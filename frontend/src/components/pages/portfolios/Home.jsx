@@ -5,11 +5,13 @@ import { useProfile } from '../../../hooks/useProfile';
 import { Stack } from './Stack';
 import { Global } from '../../../helpers/Global';
 import avatar from '../../../assets/img/default.png';
+import { useTheme } from '../../../hooks/useTheme';
 
 export const Home = () => {
 
   const { userid } = useParams();
   const { auth } = useAuth();
+  const { primaryColor } = useTheme();
 
   const { profile, loading } = useProfile(userid);
 
@@ -17,13 +19,14 @@ export const Home = () => {
     <>
       <div className='flex flex-col md:flex-row items-center lg:h-screen px-2 mt-16 md:mt-20 lg:mt-0 md:px-10'>
         {loading ?
-          <div id='container-loader' className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-10">
-            <div className="loader"></div>
+          <div className="fixed inset-0 flex flex-col justify-center items-center bg-gray-800 bg-opacity-50 backdrop-blur-sm z-50">
+            <div className={`loader border-8 ${primaryColor.border}`}></div>
+            <p className='text-center'>Preparando el espectáculo... 🎭</p>
           </div>
           :
           <>
             <div className='w-full md:w-3/5'>
-              <h1 className='text-4xl mb-2 text-blue-700'>{profile.name} {profile.last_name}</h1>
+              <h1 className={`text-4xl mb-2 ${primaryColor.text}`}>{profile.name} {profile.last_name}</h1>
               <h2 className='text-2xl mb-2'>{profile.portfolio.position}</h2>
               <p className='text-justify'>{profile.portfolio.description}</p>
               <Stack languages={profile.portfolio.stack} />

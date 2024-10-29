@@ -1,11 +1,11 @@
 import { useEffect } from "react"
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
+import { useTheme } from "../../../hooks/useTheme";
 
 export const Logout = () => {
 
-    const {setAuth} = useAuth();
-    const navigate = useNavigate();
+    const { setAuth } = useAuth();
+    const { setPrimaryColor, availableColors, setTheme } = useTheme();
 
     useEffect(() => {
         /* Vaciar el localStorage */
@@ -13,10 +13,8 @@ export const Logout = () => {
 
         /* Setear estados globales a vacio */
         setAuth({});
-
-        /* Navigate (redireccion) al login */
-        // location.reload();
-        // navigate("/");
+        setPrimaryColor(availableColors[0]);
+        setTheme('dark');
     });
 
     return (

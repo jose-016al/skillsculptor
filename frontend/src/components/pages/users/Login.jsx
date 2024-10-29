@@ -1,5 +1,5 @@
-import React, {useState } from 'react';
-import { Link, Navigate, NavLink, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Global } from '../../../helpers/Global';
 import { ApiRequests } from '../../../helpers/ApiRequests';
 import { useAuth } from '../../../hooks/useAuth';
@@ -7,6 +7,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Alert } from '../../layout/Alert';
 import signinimage from '../../../assets/img/undraw_welcome_cats_thqn.svg'
+import { useTheme } from '../../../hooks/useTheme';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -21,6 +22,7 @@ export const Login = () => {
     const [serverError, setServerError] = useState("");
     const [statusError, setStatusError] = useState("");
     const [loading, setLoading] = useState(false);
+    const { primaryColor } = useTheme();
 
     const formik = useFormik({
         initialValues: {
@@ -67,55 +69,62 @@ export const Login = () => {
                 <form id='forms' className="relative py-4 px-5 max-w-sm mx-auto border border-gray-100 rounded-lg bg-gray-100 md:bg-white dark:bg-gray-800 dark:border-gray-700" onSubmit={formik.handleSubmit}>
                     <h1 className="text-center text-2xl font-semibold mb-4">Login</h1>
                     {loading &&
-                        <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 backdrop-blur-sm z-10">
-                            <div className="loader"></div>
+                        <div className="absolute inset-0 flex flex-col justify-center items-center bg-gray-800 bg-opacity-50 backdrop-blur-sm z-10">
+                            <div className={`loader border-8 ${primaryColor.border}`}></div>
+                            <p className='text-center'>Entrando a la sala común... ¡abriendo el retrato! 🎨</p>
                         </div>
                     }
                     <div className="mb-5">
-                        <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        <label htmlFor="email" className={`block mb-2 text-sm font-medium ${formik.errors.email && formik.touched.email ? "text-red-700 dark:text-red-500" : "text-gray-900 dark:text-white"}`}>
                             Correo electronico
                         </label>
                         <input
                             type="email"
                             name="email"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
+                            ${formik.errors.email && formik.touched.email ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"}`}
                             placeholder="peter@anthony.com"
                             value={formik.values.email}
                             onChange={formik.handleChange}
                         />
-                    </div>
-                    <div>
-                        {formik.errors.email && formik.touched.email ? formik.errors.email : ""}
+                        {formik.errors.email && formik.touched.email && (
+                            <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                <span className="font-medium">Oops!</span> {formik.errors.email}
+                            </p>
+                        )}
                     </div>
                     <div className="mb-5">
-                        <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        <label htmlFor="password" className={`block mb-2 text-sm font-medium ${formik.errors.password && formik.touched.password ? "text-red-700 dark:text-red-500" : "text-gray-900 dark:text-white"}`}>
                             Contraseña
                         </label>
                         <input
                             type="password"
                             name="password"
                             placeholder="********"
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
+                            ${formik.errors.password && formik.touched.password ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"}`}
                             value={formik.values.password}
                             onChange={formik.handleChange}
                         />
-                    </div>
-                    <div>
-                        {formik.errors.password && formik.touched.password ? formik.errors.password : ""}
+                        {formik.errors.password && formik.touched.password && (
+                            <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                <span className="font-medium">Oops!</span> {formik.errors.password}
+                            </p>
+                        )}
                     </div>
                     <div>
                         {serverError && <Alert message={serverError} status={statusError} />}
                     </div>
                     <div className='flex flex-col-reverse md:flex-row justify-between'>
                         <NavLink
-                            className="text-blue-700 rounded-lg w-full sm:w-auto px-5 py-2.5 text-center"
+                            className={`${primaryColor.text} rounded-lg w-full sm:w-auto px-5 py-2.5 text-center`}
                             to="/register">
                             Crear cuenta
                         </NavLink>
 
                         <button
                             type="submit"
-                            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            className={`text-white ${primaryColor.bg} ${primaryColor.hover}  focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center`}>
                             Identificate
                         </button>
                     </div>

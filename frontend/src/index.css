@@ -10,25 +10,11 @@ body {
     @apply bg-white text-black dark:bg-gray-900 dark:text-white;
 }
 
-/* Header---------- */
-.nav-custom-dark {
-    background-color: rgba(17, 24, 39, 0.5) !important;
-}
-
-.nav-custom-light {
-    background-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-#nav-edit {
-    background-color: rgba(17, 24, 39, 0.5) !important;
-}
-
 /* Loader---------- */
 .loader {
     width: 50px;
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 8px solid #3B82F6;
     animation:
       l20-1 0.8s infinite linear alternate,
       l20-2 1.6s infinite linear;
@@ -95,13 +81,13 @@ body {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background-color: #3B82F6;
+    background-color: rgba(255, 255, 255, 0.5);
     border-radius: 12px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background-color: #3B82F6;
+    background-color: white;
     border-radius: 12px;
 }
 

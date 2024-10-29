@@ -51,13 +51,13 @@ export const Remove = ({ id }) => {
 
     return (
         <div>
-            <Button
+            <button
                 type="button"
-                className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg w-full sm:w-auto p-0 m-0 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
                 onClick={() => setOpenModal(true)}
             >
                 Eliminar
-            </Button>
+            </button>
 
             {/* Modal de confirmación */}
             <Modal show={openModal} size="md" onClose={() => setOpenModal(false)} popup>
@@ -70,8 +70,9 @@ export const Remove = ({ id }) => {
                         </h3>
 
                         {loading ? (
-                            <div className="flex justify-center items-center">
-                                <div className="loader"></div> 
+                            <div className="flex flex-col justify-center items-center">
+                                <div className={`loader border-8 ${primaryColor.border}`}></div>
+                                <p className='text-center'>Desintegrando... 💥</p>
                             </div>
                         ) : (
                             <div className="flex justify-center gap-4">

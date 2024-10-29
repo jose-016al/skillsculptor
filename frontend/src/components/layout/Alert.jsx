@@ -37,15 +37,13 @@ export const Alert = ({ message, status }) => {
                     </Toast>
                 );
             default:
-                return null; // Si no hay un estado válido, no se muestra nada
+                return null;
         }
     };
 
     return (
-        // <div  className='z-30 py-3 px-3'>
-            <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-80 z-30 py-3 px-3">
-                {renderToast()}
-            </div>
-        // </div>
+        <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-80 z-30 py-3 px-3">
+            {renderToast()}
+        </div>
     );
 };

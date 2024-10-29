@@ -8,8 +8,6 @@ export const LayoutPublic = () => {
 
     return (
         <>
-            {/* LAYOUT */}
-            {/* Contenido principal */}
             <Nav />
             <main>
                 {!auth.id ? <Outlet /> : <Navigate to="/user" />}

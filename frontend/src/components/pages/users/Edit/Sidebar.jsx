@@ -50,7 +50,7 @@ export const Sidebar = () => {
                         <li>
                             <NavLink to={`/user/edit/${auth.id}/user`} className={({ isActive }) =>
                                 isActive
-                                    ? `text-${primaryColor} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
+                                    ? `${primaryColor.text} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
                                     : 'text-white-100 flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
                             }>
                                 <HiUser className='text-2xl' />
@@ -60,7 +60,7 @@ export const Sidebar = () => {
                         <li>
                             <NavLink to={`/user/edit/${auth.id}/portfolio`} className={({ isActive }) =>
                                 isActive
-                                    ? `text-${primaryColor} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
+                                    ? `${primaryColor.text} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
                                     : 'text-white-100 flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
                             }>
                                 <ImProfile className='text-2xl' />
@@ -70,7 +70,7 @@ export const Sidebar = () => {
                         <li>
                             <NavLink to={`/user/edit/${auth.id}/education`} className={({ isActive }) =>
                                 isActive
-                                    ? `text-${primaryColor} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
+                                    ? `${primaryColor.text} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
                                     : 'text-white-100 flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
                             }>
                                 <IoSchool className='text-2xl' />
@@ -80,7 +80,7 @@ export const Sidebar = () => {
                         <li>
                             <NavLink to={`/user/edit/${auth.id}/experience`} className={({ isActive }) =>
                                 isActive
-                                    ? `text-${primaryColor} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
+                                    ? `${primaryColor.text} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
                                     : 'text-white-100 flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
                             }>
                                 <MdWork className='text-2xl' />
@@ -90,7 +90,7 @@ export const Sidebar = () => {
                         <li>
                             <NavLink to={`/user/edit/${auth.id}/project`} className={({ isActive }) =>
                                 isActive
-                                    ? `text-${primaryColor} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
+                                    ? `${primaryColor.text} font-bold flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group`
                                     : 'text-white-100 flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 group'
                             }>
                                 <PiProjectorScreenChartFill className='text-2xl' />

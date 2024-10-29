@@ -88,9 +88,7 @@ export const Search = () => {
                         <p className='text-center'>No users found</p>
                     )}
                 </Modal.Body>
-                <Modal.Footer>
-                    {/* Opcionalmente puedes añadir botones en el pie del modal */}
-                </Modal.Footer>
+                <Modal.Footer></Modal.Footer>
             </Modal>
         </>
     );

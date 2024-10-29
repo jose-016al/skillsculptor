@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { ThemeMode } from '../../../layout/ThemeMode'
 import { Sidebar } from './Sidebar'
 import { Global } from '../../../../helpers/Global';
 import { ApiRequests } from '../../../../helpers/ApiRequests';
@@ -8,6 +7,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Alert } from '../../../layout/Alert';
 import { useIcons } from '../../../../hooks/useIcons';
+import { useTheme } from '../../../../hooks/useTheme';
 
 export const EditPortfolio = () => {
 
@@ -18,6 +18,7 @@ export const EditPortfolio = () => {
 
   const iconsMap = useIcons();
   const { auth, setAuth } = useAuth();
+  const { primaryColor } = useTheme();
 
   useEffect(() => {
     setSelectedSkills(auth.portfolio.stack);
@@ -82,7 +83,7 @@ export const EditPortfolio = () => {
   };
 
   return (
-    <div className='md:container mx-3 md:mx-auto flex flex-col md:flex-row mt-20 border border-gray-300 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900'>
+    <div className='md:container mx-3 mb-10 md:mx-auto flex flex-col md:flex-row mt-20 border border-gray-300 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900'>
       <div>
         <Sidebar />
       </div>
@@ -90,8 +91,9 @@ export const EditPortfolio = () => {
         <form className="relative py-4 px-5" onSubmit={formik.handleSubmit}>
           <h1 className="text-center text-2xl font-semibold mb-4">Editar portfolio</h1>
           {loading &&
-            <div className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 backdrop-blur-sm z-10">
-              <div className="loader"></div>
+            <div className="absolute inset-0 flex flex-col justify-center items-center bg-gray-800 bg-opacity-50 backdrop-blur-sm z-10">
+              <div className={`loader border-8 ${primaryColor.border}`}></div>
+              <p className='text-center'>Reescribiendo la historia... ✍️</p>
             </div>
           }
           <div className='w-full'>
@@ -102,7 +104,7 @@ export const EditPortfolio = () => {
               <input
                 type="text"
                 name="position"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                 defaultValue={auth.portfolio.position}
                 onChange={formik.handleChange}
               />
@@ -119,7 +121,7 @@ export const EditPortfolio = () => {
               <textarea
                 type="email"
                 name="description"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                 defaultValue={auth.portfolio.description}
                 onChange={formik.handleChange}
               />
@@ -131,20 +133,19 @@ export const EditPortfolio = () => {
           <div className='flex flex-wrap justify-center my-5'>
             {Object.entries(iconsMap).map(([skill, icon], index) => (
               <div key={index} className="p-2">
-                {/* Checkbox oculto */}
-                <input
+                                <input
                   type="checkbox"
                   className="hidden"
                   checked={selectedSkills.includes(skill)}
                   readOnly
                 />
 
-                {/* Contenedor del ícono con onClick */}
+
                 <div
                   className={`flex flex-col items-center cursor-pointer`}
-                  onClick={() => handleSkillChange(skill)}  // Añadir el manejador onClick aquí
+                  onClick={() => handleSkillChange(skill)}
                 >
-                  <div className={`text-5xl ${selectedSkills.includes(skill) ? 'text-blue-500' : 'text-gray-500 dark:text-gray-600'}`}>
+                  <div className={`text-5xl ${selectedSkills.includes(skill) ? primaryColor.text : 'text-gray-500 dark:text-gray-600'}`}>
                     {icon}
                   </div>
                   <span>{skill}</span>
@@ -159,7 +160,7 @@ export const EditPortfolio = () => {
           <div className='mt-5'>
             <button
               type="submit"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+              className={`text-white ${primaryColor.bg} ${primaryColor.hover}  focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center`}>
               Actualizar
             </button>
           </div>

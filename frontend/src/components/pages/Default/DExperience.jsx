@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Pagination } from "flowbite-react";
 import image from '../../../assets/img/undraw_working_re_ddwy.svg';
+import { useTheme } from '../../../hooks/useTheme';
 
 export const DExperience = () => {
 
@@ -8,6 +9,7 @@ export const DExperience = () => {
   const itemsPerPage = 4;
   const [currentItems, setCurrentItems] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const {primaryColor} = useTheme();
 
   const experiencesItems = [
     {
@@ -65,14 +67,14 @@ export const DExperience = () => {
         </div>
 
         <div className='w-full md:w-1/2'>
-          <ol className="relative border-s border-blue-700">
+          <ol className={`relative border-s ${primaryColor.border}`}>
             {currentItems.map((item, index) => (
               <li key={index} className="mt-10 ms-4">
-                <div className="absolute w-3 h-3 rounded-full mt-1.5 -start-1.5 border border-blue-700 bg-blue-700"></div>
+                <div className={`absolute w-3 h-3 rounded-full mt-1.5 -start-1.5 border ${primaryColor.border} ${primaryColor.bg}`}></div>
                 <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{item.date}</time>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{item.title}</h3>
                 {item.page ?
-                  <a href={item.page} className="mb-4 text-base font-normal text-blue-700" target="_blank" rel="noopener noreferrer">
+                  <a href={item.page} className={`mb-4 text-base font-normal ${primaryColor.text}`} target="_blank" rel="noopener noreferrer">
                     {item.company}
                   </a>
                   :

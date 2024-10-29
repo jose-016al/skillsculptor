@@ -4,11 +4,13 @@ import { useParams } from 'react-router-dom';
 import { useProfile } from '../../../../hooks/useProfile';
 import image from '../../../../assets/img/undraw_working_re_ddwy.svg';
 import { Pagination } from "flowbite-react";
+import { useTheme } from '../../../../hooks/useTheme';
 
 export const Experience = () => {
 
   const { userid } = useParams();
   const { auth } = useAuth();
+  const { primaryColor } = useTheme();
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
@@ -37,8 +39,9 @@ export const Experience = () => {
     <>
       <div className='flex flex-row items-center justify-evenly md:h-screen px-5 mt-10 md:mt-0 space-x-5'>
         {loading ?
-          <div id='container-loader' className="absolute inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-10">
-            <div className="loader"></div>
+          <div className="fixed inset-0 flex flex-col justify-center items-center bg-gray-800 bg-opacity-50 backdrop-blur-sm z-50">
+            <div className={`loader border-8 ${primaryColor.border}`}></div>
+            <p className='text-center'>Preparando el espectáculo... 🎭</p>
           </div>
           :
           <>
@@ -55,14 +58,14 @@ export const Experience = () => {
                 </div>
 
                 <div className='w-full md:w-1/2'>
-                  <ol className="relative border-s border-blue-700">
+                  <ol className={`relative border-s ${primaryColor.border}`}>
                     {currentItems.map((item, index) => (
                       <li key={index} className="mt-10 ms-4">
-                        <div className="absolute w-3 h-3 rounded-full mt-1.5 -start-1.5 border border-blue-700 bg-blue-700"></div>
+                        <div className={`absolute w-3 h-3 rounded-full mt-1.5 -start-1.5 border ${primaryColor.border} ${primaryColor.bg}`}></div>
                         <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{item.date}</time>
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{item.title}</h3>
                         {item.page ?
-                          <a href={item.page} className="mb-4 text-base font-normal text-blue-700" target="_blank" rel="noopener noreferrer">
+                          <a href={item.page} className={`mb-4 text-base font-normal ${primaryColor.text}`} target="_blank" rel="noopener noreferrer">
                             {item.company}
                           </a>
                           :

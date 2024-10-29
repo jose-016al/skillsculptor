@@ -1,7 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import { Checkbox, Datepicker } from 'flowbite-react';
+import { Datepicker } from 'flowbite-react';
+import { useTheme } from '../../hooks/useTheme';
+import { FaCheck } from 'react-icons/fa';
 
 export const Dates = ({ setDate, rangeDatePicker }) => {
+
+    const { primaryColor } = useTheme();
+
+    const customTheme = {
+        "popup": {
+            "footer": {
+                "base": "mt-2 flex space-x-2",
+                "button": {
+                    "base": "w-full rounded-lg px-5 py-2 text-center text-sm font-medium focus:ring-4 focus:ring-cyan-300",
+                    "today": `${primaryColor.bg} text-white ${primaryColor.hover}`,
+                    "clear": "border border-gray-300 bg-white text-gray-900 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+                }
+            }
+        },
+        "views": {
+            "days": {
+                "items": {
+                    "base": "grid w-64 grid-cols-7",
+                    "item": {
+                        "base": "block flex-1 cursor-pointer rounded-lg border-0 text-center text-sm font-semibold leading-9 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600",
+                        "selected": `${primaryColor.bg} text-white ${primaryColor.hover}`,
+                        "disabled": "text-gray-500"
+                    }
+                }
+            },
+        }
+    };
+
     const [startDate, setStartDate] = useState();
     const [endDate, setEndDate] = useState();
     const [isChecked, setIsChecked] = useState(false);
@@ -63,11 +93,14 @@ export const Dates = ({ setDate, rangeDatePicker }) => {
                             Fecha de inicio
                         </label>
                         <Datepicker
-                            value={startDate}
                             language="es-ES"
+                            labelTodayButton="Hoy"
+                            labelClearButton="Limpiar"
+                            weekStart={1}
+                            theme={customTheme}
                             minDate={minDate}
                             maxDate={now}
-                            weekStart={1}
+                            value={startDate}
                             onChange={handleStartDateChange}
                         />
                     </div>
@@ -80,7 +113,10 @@ export const Dates = ({ setDate, rangeDatePicker }) => {
                         </label>
                         <Datepicker
                             language="es-ES"
+                            labelTodayButton="Hoy"
+                            labelClearButton="Limpiar"
                             weekStart={1}
+                            theme={customTheme}
                             minDate={minDate}
                             maxDate={now}
                             value={isChecked ? now : endDate}
@@ -90,13 +126,25 @@ export const Dates = ({ setDate, rangeDatePicker }) => {
                     </div>
 
                     <div className='flex space-x-2 items-center'>
-                        <Checkbox
+                        <input
+                            type="checkbox"
+                            id="date"
+                            name='date'
                             checked={isChecked}
                             onChange={handleCheckboxChange}
-                            label="Actualmente"
+                            className="hidden"
                         />
-                        <label htmlFor="currently" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Actualmente
+                        <label htmlFor="date" className="flex items-center cursor-pointer">
+                            <span className={`w-5 h-5 inline-block rounded border-2 border-gray-300 mr-2 
+                            ${isChecked ? primaryColor.bg : 'bg-white'} 
+                            ${isChecked ? 'border-transparent' : ''}`}>
+                                {isChecked && (
+                                    <FaCheck className={`w-full h-full text-white`} /> // Ícono de verificación
+                                )}
+                            </span>
+                            <span className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
+                                Actualmente
+                            </span>
                         </label>
                     </div>
                 </div>
@@ -110,7 +158,10 @@ export const Dates = ({ setDate, rangeDatePicker }) => {
                 </label>
                 <Datepicker
                     language="es-ES"
+                    labelTodayButton="Hoy"
+                    labelClearButton="Limpiar"
                     weekStart={1}
+                    theme={customTheme}
                     minDate={minDate}
                     maxDate={now}
                     value={isChecked ? now : endDate}
@@ -120,12 +171,23 @@ export const Dates = ({ setDate, rangeDatePicker }) => {
                 <div className='flex space-x-2 items-center'>
                     <input
                         type="checkbox"
+                        id="date"
                         name='date'
                         checked={isChecked}
                         onChange={handleCheckboxChange}
+                        className="hidden"
                     />
-                    <label htmlFor="date" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Actualmente
+                    <label htmlFor="date" className="flex items-center cursor-pointer">
+                        <span className={`w-5 h-5 inline-block rounded border-2 border-gray-300 mr-2 
+                            ${isChecked ? primaryColor.bg : 'bg-white'} 
+                            ${isChecked ? 'border-transparent' : ''}`}>
+                            {isChecked && (
+                                <FaCheck className={`w-full h-full text-white`} /> // Ícono de verificación
+                            )}
+                        </span>
+                        <span className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Actualmente
+                        </span>
                     </label>
                 </div>
             </div>

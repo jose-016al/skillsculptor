@@ -18,14 +18,16 @@ export const ThemeMode = ({ setThemeChange }) => {
                 className='flex flex-row-reverse items-center gap-5 mb-4'
                 checked={switch1}
                 label="Modo oscuro"
-                onChange={changeTheme} // Cambia el modo de tema
+                onChange={changeTheme} 
             />
             <div className="flex gap-2">
-                {availableColors.map((color) => (
+                {availableColors.map((color, index) => (
                     <div
-                        key={color}
-                        className={`w-8 h-8 cursor-pointer border-2 rounded-full border-gray-300 transition-transform duration-300 ${primaryColor === color ? 'ring-2 ring-offset-2 ring-gray-500' : ''} bg-${color}`}
-                        onClick={() => changeColor(color)} // Cambia el color del tema
+                        key={index} 
+                        className={`w-8 h-8 cursor-pointer border-2 rounded-full border-gray-300 transition-transform duration-300 
+                        ${primaryColor === color ? 'ring-2 ring-offset-2 ring-gray-500' : ''} 
+                        ${color.bg}`}
+                        onClick={() => changeColor(color)}
                     ></div>
                 ))}
             </div>

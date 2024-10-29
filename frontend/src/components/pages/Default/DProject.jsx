@@ -1,8 +1,11 @@
 import twitch from '../../../assets/img/twitch.png';
 import portfolio from '../../../assets/img/portfolio.png';
 import platform from '../../../assets/img/platform.png';
+import { useTheme } from '../../../hooks/useTheme';
 
 export const DProject = () => {
+
+  const { primaryColor } = useTheme();
 
   const projectsItems = [
     {
@@ -64,10 +67,10 @@ export const DProject = () => {
             <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{item.description}</p>
             <div className='flex flex-col-reverse md:flex-row justify-evenly'>
               {item.demo &&
-                <a href={item.demo} className='inline-flex items-center my-3 md:my-0 px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'>Demo</a>
+                <a href={item.demo} className={`inline-flex items-center my-3 md:my-0 px-3 py-2 text-sm font-medium text-center text-white ${primaryColor.bg} rounded-lg ${primaryColor.hover} focus:ring-4 focus:outline-none ${primaryColor.focusRing}`}>Demo</a>
               }
               {item.github &&
-                <a href={item.github} className='inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'>GitHub</a>
+                <a href={item.github} className={`inline-flex items-center my-3 md:my-0 px-3 py-2 text-sm font-medium text-center text-white ${primaryColor.bg} rounded-lg ${primaryColor.hover} focus:ring-4 focus:outline-none ${primaryColor.focusRing}`}>GitHub</a>
               }
             </div>
           </div>
