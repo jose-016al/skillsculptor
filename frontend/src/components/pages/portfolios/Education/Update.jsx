@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Modal } from "flowbite-react";
+import { Modal } from "flowbite-react";
 import { Global } from '../../../../helpers/Global';
 import { ApiRequests } from '../../../../helpers/ApiRequests';
 import { useAuth } from '../../../../hooks/useAuth';
@@ -8,6 +8,15 @@ import * as Yup from "yup";
 import { Alert } from '../../../layout/Alert';
 import { Dates } from '../../../layout/Dates';
 import { useTheme } from '../../../../hooks/useTheme';
+
+const validationSchema = Yup.object().shape({
+    title: Yup.string()
+        .required("El campo titulo es obligatorio")
+        .min(3, "El titulo tiene que tener al menos tres carácteres")
+        .max(100, "El titulo no puede superar los 100 carácteres"),
+    date: Yup.string()
+        .required("El campo fecha es obligatorio"),
+});
 
 export const Update = ({ education }) => {
 
@@ -20,9 +29,10 @@ export const Update = ({ education }) => {
 
     const formik = useFormik({
         initialValues: {
-            title: "",
-            date: ""
+            title: education.title,
+            date: education.date
         },
+        validationSchema,
         onSubmit: values => {
             setLoading(true);
             edit(values);
@@ -32,12 +42,7 @@ export const Update = ({ education }) => {
     const edit = async (form) => {
         setServerError("");
         setStatusError("");
-
-        let dataSave = {
-            title: form.title || education.title,
-            date: form.date || education.date,
-        };
-
+        let dataSave = form;
         try {
             const token = localStorage.getItem('token');
             const { data, status } = await ApiRequests(`${Global.url}${education.id}/edit/education`, "PUT", dataSave, false, token);
@@ -96,19 +101,16 @@ export const Update = ({ education }) => {
                                     <input
                                         type="text"
                                         name="title"
-                                        className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.border} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                                        className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.title && formik.touched.title ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                                         defaultValue={education.title}
                                         onChange={formik.handleChange}
                                     />
                                 </div>
-                                <div>
-                                    {formik.errors.title && formik.touched.title ? formik.errors.title : ""}
-                                </div>
+                                {formik.errors.title && formik.touched.title && (
+                                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.title}</p>
+                                )}
                             </div>
-                            <Dates setDate={(date) => formik.setFieldValue("date", date)} rangeDatePicker={false} />
-                            <div>
-                                {formik.errors.date && formik.touched.date ? formik.errors.date : ""}
-                            </div>
+                            <Dates setDate={(date) => formik.setFieldValue("date", date)} rangeDatePicker={false} formik={formik} />
                         </div>
                         <div>
                             {serverError && <Alert message={serverError} status={statusError} />}

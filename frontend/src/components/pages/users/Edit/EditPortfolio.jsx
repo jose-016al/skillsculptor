@@ -9,6 +9,17 @@ import { Alert } from '../../../layout/Alert';
 import { useIcons } from '../../../../hooks/useIcons';
 import { useTheme } from '../../../../hooks/useTheme';
 
+const validationSchema = Yup.object().shape({
+  position: Yup.string()
+    .required("El campo Cargo es obligatorio")
+    .min(3, "El cargo tiene que tener al menos tres carácteres")
+    .max(50, "El cargo no puede superar los 50 carácteres"),
+  description: Yup.string()
+    .required("El campo descripción es obligatorio")
+    .min(10, "El descripción tiene que tener al menos 10 carácteres")
+    .max(500, "El descripción no puede superar los 500 carácteres"),
+});
+
 export const EditPortfolio = () => {
 
   const [serverError, setServerError] = useState("");
@@ -26,9 +37,11 @@ export const EditPortfolio = () => {
 
   const formik = useFormik({
     initialValues: {
-      position: "",
-      description: ""
+      position: auth.portfolio.position,
+      description: auth.portfolio.description,
+      stack: auth.portfolio.stack
     },
+    validationSchema,
     onSubmit: values => {
       setLoading(true);
       edit(values);
@@ -38,13 +51,11 @@ export const EditPortfolio = () => {
   const edit = async (form) => {
     setServerError("");
     setStatusError("");
-
     let portfolio = {
-      position: form.position || auth.portfolio.position,
-      description: form.description || auth.portfolio.description,
+      position: form.position,
+      description: form.description,
       stack: selectedSkills
-    };
-
+    }
     try {
       const token = localStorage.getItem('token');
       const { data, status } = await ApiRequests(`${Global.url}${auth.portfolio.id}/edit/portfolio`, "PUT", portfolio, false, token);
@@ -104,14 +115,14 @@ export const EditPortfolio = () => {
               <input
                 type="text"
                 name="position"
-                className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.position && formik.touched.position ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                 defaultValue={auth.portfolio.position}
                 onChange={formik.handleChange}
               />
             </div>
-            <div>
-              {formik.errors.position && formik.touched.position ? formik.errors.position : ""}
-            </div>
+            {formik.errors.position && formik.touched.position && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.position}</p>
+            )}
           </div>
           <div className='w-full'>
             <div>
@@ -121,19 +132,19 @@ export const EditPortfolio = () => {
               <textarea
                 type="email"
                 name="description"
-                className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.description && formik.touched.description ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                 defaultValue={auth.portfolio.description}
                 onChange={formik.handleChange}
               />
             </div>
-            <div>
-              {formik.errors.description && formik.touched.description ? formik.errors.description : ""}
-            </div>
+            {formik.errors.description && formik.touched.description && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.description}</p>
+            )}
           </div>
           <div className='flex flex-wrap justify-center my-5'>
             {Object.entries(iconsMap).map(([skill, icon], index) => (
               <div key={index} className="p-2">
-                                <input
+                <input
                   type="checkbox"
                   className="hidden"
                   checked={selectedSkills.includes(skill)}

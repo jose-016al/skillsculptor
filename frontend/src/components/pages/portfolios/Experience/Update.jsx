@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Modal } from "flowbite-react";
+import { Modal } from "flowbite-react";
 import { Global } from '../../../../helpers/Global';
 import { ApiRequests } from '../../../../helpers/ApiRequests';
 import { useAuth } from '../../../../hooks/useAuth';
@@ -8,6 +8,22 @@ import * as Yup from "yup";
 import { Alert } from '../../../layout/Alert';
 import { Dates } from '../../../layout/Dates';
 import { useTheme } from '../../../../hooks/useTheme';
+
+const validationSchema = Yup.object().shape({
+    title: Yup.string()
+        .required("El campo titulo es obligatorio")
+        .min(3, "El titulo tiene que tener al menos tres carácteres")
+        .max(50, "El titulo no puede superar los 50 carácteres"),
+    company: Yup.string()
+        .required("El campo empresa es obligatorio")
+        .min(3, "La empresa tiene que tener al menos tres carácteres")
+        .max(50, "La empresa no puede superar los 50 carácteres"),
+    date: Yup.string()
+        .required("El campo fecha es obligatorio"),
+    page: Yup.string()
+        .url("Debe ser un enlace válido")
+        .nullable(),
+});
 
 export const Update = ({ experience }) => {
 
@@ -20,9 +36,12 @@ export const Update = ({ experience }) => {
 
     const formik = useFormik({
         initialValues: {
-            title: "",
-            date: ""
+            title: experience.title,
+            date: experience.date,
+            company: experience.company,
+            page: experience.page
         },
+        validationSchema,
         onSubmit: values => {
             setLoading(true);
             edit(values);
@@ -32,14 +51,7 @@ export const Update = ({ experience }) => {
     const edit = async (form) => {
         setServerError("");
         setStatusError("");
-
-        let dataSave = {
-            title: form.title || experience.title,
-            date: form.date || experience.date,
-            company: form.company || experience.company,
-            page: form.page || experience.page,
-        };
-
+        let dataSave = form;
         try {
             const token = localStorage.getItem('token');
             const { data, status } = await ApiRequests(`${Global.url}${experience.id}/edit/experience`, "PUT", dataSave, false, token);
@@ -98,14 +110,14 @@ export const Update = ({ experience }) => {
                                     <input
                                         type="text"
                                         name="title"
-                                        className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.border} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                                        className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.title && formik.touched.title ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                                         defaultValue={experience.title}
                                         onChange={formik.handleChange}
                                     />
                                 </div>
-                                <div>
-                                    {formik.errors.title && formik.touched.title ? formik.errors.title : ""}
-                                </div>
+                                {formik.errors.title && formik.touched.title && (
+                                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.title}</p>
+                                )}
                             </div>
                         </div>
                         <div className='flex flex-col md:flex-row md:space-x-4'>
@@ -117,14 +129,14 @@ export const Update = ({ experience }) => {
                                     <input
                                         type="text"
                                         name="company"
-                                        className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.border} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                                        className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.company && formik.touched.company ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                                         defaultValue={experience.company}
                                         onChange={formik.handleChange}
                                     />
                                 </div>
-                                <div>
-                                    {formik.errors.company && formik.touched.company ? formik.errors.company : ""}
-                                </div>
+                                {formik.errors.company && formik.touched.company && (
+                                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.company}</p>
+                                )}
                             </div>
                             <div className='md:w-1/2'>
                                 <div>
@@ -134,20 +146,17 @@ export const Update = ({ experience }) => {
                                     <input
                                         type="text"
                                         name="page"
-                                        className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.border} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                                        className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.page && formik.touched.page ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                                         defaultValue={experience.page}
                                         onChange={formik.handleChange}
                                     />
                                 </div>
-                                <div>
-                                    {formik.errors.page && formik.touched.page ? formik.errors.page : ""}
-                                </div>
+                                {formik.errors.page && formik.touched.page && (
+                                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.page}</p>
+                                )}
                             </div>
                         </div>
-                        <Dates setDate={(date) => formik.setFieldValue("date", date)} rangeDatePicker={true} />
-                        <div>
-                            {formik.errors.date && formik.touched.date ? formik.errors.date : ""}
-                        </div>
+                        <Dates setDate={(date) => formik.setFieldValue("date", date)} rangeDatePicker={true} formik={formik} />
                         <div>
                             {serverError && <Alert message={serverError} status={statusError} />}
                         </div>

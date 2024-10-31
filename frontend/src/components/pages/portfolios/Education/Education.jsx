@@ -65,7 +65,7 @@ export const Education = () => {
                         <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{item.date}</time>
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{item.title}</h3>
                       </li>
-                    ))}
+                    )).reverse()}
                   </ol>
                   {totalPages > 1 && (
                     <div className="flex justify-center mt-5">

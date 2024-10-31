@@ -9,8 +9,12 @@ import { Dates } from '../../../layout/Dates';
 import { useTheme } from '../../../../hooks/useTheme';
 
 const validationSchema = Yup.object().shape({
-  title: Yup.string().required("El título es obligatorio"),
-  date: Yup.string().required("La fecha es obligatorio"),
+  title: Yup.string()
+    .required("El campo titulo es obligatorio")
+    .min(3, "El titulo tiene que tener al menos tres carácteres")
+    .max(100, "El titulo no puede superar los 100 carácteres"),
+  date: Yup.string()
+    .required("El campo fecha es obligatorio"),
 });
 
 export const Add = () => {
@@ -51,7 +55,7 @@ export const Add = () => {
           ...auth,
           portfolio: {
             ...auth.portfolio,
-            education: [...auth.portfolio.education, data] // Añadir el nuevo proyecto al array
+            education: [...auth.portfolio.education, data]
           }
         };
         setAuth(updatedUser);
@@ -70,8 +74,6 @@ export const Add = () => {
       setLoading(false);
     }
   };
-
-
 
   return (
     <div className='w-full'>
@@ -92,20 +94,17 @@ export const Add = () => {
               <input
                 type="text"
                 name="title"
-                className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.border} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.title && formik.touched.title ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                 value={formik.values.title}
                 onChange={formik.handleChange}
               />
             </div>
-            <div>
-              {formik.errors.title && formik.touched.title ? formik.errors.title : ""}
-            </div>
+            {formik.errors.title && formik.touched.title && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.title}</p>
+            )}
           </div>
           <div className='md:w-1/2'>
-            <Dates setDate={(date) => formik.setFieldValue("date", date)} RangeDatePicker={false} />
-            <div>
-              {formik.errors.date && formik.touched.date ? formik.errors.date : ""}
-            </div>
+            <Dates setDate={(date) => formik.setFieldValue("date", date)} RangeDatePicker={false} formik={formik} />
           </div>
         </div>
         <div>

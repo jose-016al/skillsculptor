@@ -1,40 +1,45 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { ThemeMode } from '../../../layout/ThemeMode'
 import { Sidebar } from './Sidebar'
 import { Global } from '../../../../helpers/Global';
 import { ApiRequests } from '../../../../helpers/ApiRequests';
 import { useAuth } from '../../../../hooks/useAuth';
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import { Alert } from '../../../layout/Alert';
-import { useNavigate } from 'react-router-dom';
 import avatar from '../../../../assets/img/default.png';
 import { useTheme } from '../../../../hooks/useTheme';
+import * as Yup from "yup";
 
-const FILE_SIZE = 1024 * 1024; // 1024 KB
-const SUPPORTED_FORMATS = ["image/jpeg", "image/png"];
+const PHOTO_SUPPORTED_FORMATS = ["image/png", "image/jpg", "image/jpeg"];
+const FILE_SIZE = 1024 * 1024;
 
 const validationSchema = Yup.object().shape({
+  name: Yup.string()
+    .required("El campo nombre es obligatorio")
+    .min(3, "El nombre tiene que tener al menos tres carácteres")
+    .max(20, "El nombre no puede superar los 20 carácteres"),
+  last_name: Yup.string()
+    .required("El campo apellido es obligatorio")
+    .min(3, "El apellido tiene que tener al menos tres carácteres")
+    .max(50, "El apellido no puede superar los 50 carácteres"),
   email: Yup.string()
-    .email("Email no válido"),
+    .required("El email es obligatorio")
+    .email("El email no tiene un formato válido"),
   emailrepeat: Yup.string()
-    .oneOf([Yup.ref('email'), null], 'El email no coincide'),
+    .oneOf([Yup.ref('email'), null], "Los correos electrónicos deben coincidir")
+    .required("La confirmación de email es obligatoria"),
   password: Yup.string()
     .min(8, "La contraseña debe tener al menos 8 caracteres"),
   passwordrepeat: Yup.string()
     .oneOf([Yup.ref('password'), null], 'Las contraseñas deben coincidir'),
   image: Yup.mixed()
     .nullable()
-    .test(
-      "fileSize",
-      "El archivo es demasiado grande. El tamaño máximo es 1024 KB",
-      (value) => !value || (value && value.size <= FILE_SIZE)
-    )
-    .test(
-      "fileFormat",
-      "Solo se permiten archivos de tipo JPEG o PNG",
-      (value) => !value || (value && SUPPORTED_FORMATS.includes(value.type))
-    )
+    .test("fileFormat", "Formato de imagen inválido", (file) => {
+      return !file || PHOTO_SUPPORTED_FORMATS.includes(file.type);
+    })
+    .test("fileSize", "El archivo es demasiado grande, máximo 1024KB", (file) => {
+      return !file || file.size <= FILE_SIZE;
+    }),
 });
 
 export const EditUser = () => {
@@ -45,18 +50,14 @@ export const EditUser = () => {
   const { auth, setAuth } = useAuth();
   const { primaryColor, theme } = useTheme();
 
-  useEffect(() => {
-    console.log(auth.theme.color);
-  }, [auth]);
-
   const formik = useFormik({
     initialValues: {
-      name: "",
-      last_name: "",
-      email: "",
-      emailrepeat: "",
-      passwordrepeat: "",
+      name: auth.name,
+      last_name: auth.last_name,
+      email: auth.email,
+      emailrepeat: auth.email,
       password: "",
+      passwordrepeat: "",
       image: null
     },
     validationSchema,
@@ -69,15 +70,7 @@ export const EditUser = () => {
   const edit = async (form) => {
     setServerError("");
     setStatusError("");
-
-    let user = {
-      name: form.name || auth.name,
-      last_name: form.last_name || auth.last_name,
-      email: form.email || auth.email,
-      password: form.password || "", // Si la contraseña está vacía, no se envía
-      theme: form.theme
-    };
-
+    let user = form;
     try {
       const token = localStorage.getItem('token');
       const { data, status } = await ApiRequests(`${Global.url}${auth.id}/edit/user`, "PUT", user, false, token);
@@ -113,9 +106,6 @@ export const EditUser = () => {
             setStatusError("error");
           }
         }
-
-        console.log(updatedUser);
-        console.log(auth);
         setServerError("Usuario actualizado");
         setStatusError("success");
         setLoading(false);
@@ -167,13 +157,13 @@ export const EditUser = () => {
                   type="file"
                   name='image'
                   id='file'
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  className={`bg-gray-50 border text-sm rounded-lg block w-full ${formik.errors.image && formik.touched.image ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                   onChange={handleImageChange}
                 />
               </div>
-              <div>
-                {formik.errors.image && formik.touched.image ? formik.errors.image : ""}
-              </div>
+              {formik.errors.image && formik.touched.image && (
+                <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.image}</p>
+              )}
             </div>
             <div className='md:w-1/2'>
               <div className='w-40 h-40 mx-auto mt-5 md:mt-0'>
@@ -196,11 +186,14 @@ export const EditUser = () => {
                 <input
                   type="text"
                   name="name"
-                  className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                  className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.name && formik.touched.name ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                   defaultValue={auth.name}
                   onChange={formik.handleChange}
                 />
               </div>
+              {formik.errors.name && formik.touched.name && (
+                <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.name}</p>
+              )}
             </div>
             <div className='md:w-1/2'>
               <div>
@@ -210,11 +203,14 @@ export const EditUser = () => {
                 <input
                   type="text"
                   name="last_name"
-                  className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                  className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.last_name && formik.touched.last_name ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                   defaultValue={auth.last_name}
                   onChange={formik.handleChange}
                 />
               </div>
+              {formik.errors.last_name && formik.touched.last_name && (
+                <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.last_name}</p>
+              )}
             </div>
           </div>
           <div className='flex flex-col md:flex-row md:space-x-4'>
@@ -226,31 +222,31 @@ export const EditUser = () => {
                 <input
                   type="email"
                   name="email"
-                  className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                  className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.email && formik.touched.email ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                   defaultValue={auth.email}
                   onChange={formik.handleChange}
                 />
               </div>
-              <div>
-                {formik.errors.email && formik.touched.email ? formik.errors.email : ""}
-              </div>
+              {formik.errors.email && formik.touched.email && (
+                <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.email}</p>
+              )}
             </div>
             <div className='md:w-1/2'>
               <div>
                 <label htmlFor="email" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Repetir correo electronico
+                  Confirmar correo electronico
                 </label>
                 <input
                   type="email"
                   name="emailrepeat"
-                  className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                  className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.emailrepeat && formik.touched.emailrepeat ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                   defaultValue={auth.email}
                   onChange={formik.handleChange}
                 />
               </div>
-              <div>
-                {formik.errors.emailrepeat && formik.touched.emailrepeat ? formik.errors.emailrepeat : ""}
-              </div>
+              {formik.errors.emailrepeat && formik.touched.emailrepeat && (
+                <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.emailrepeat}</p>
+              )}
             </div>
           </div>
           <div className='flex flex-col md:flex-row md:space-x-4'>
@@ -262,31 +258,31 @@ export const EditUser = () => {
                 <input
                   type="password"
                   name="password"
-                  className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                  className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.password && formik.touched.password ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                   value={formik.values.password}
                   onChange={formik.handleChange}
                 />
               </div>
-              <div>
-                {formik.errors.password && formik.touched.password ? formik.errors.password : ""}
-              </div>
+              {formik.errors.password && formik.touched.password && (
+                <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.password}</p>
+              )}
             </div>
             <div className='md:w-1/2'>
               <div>
                 <label htmlFor="passwordrepeat" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">
-                  Repetir contraseña
+                  Confirmar contraseña
                 </label>
                 <input
                   type="password"
                   name="passwordrepeat"
-                  className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.focusBorder} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                  className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.passwordrepeat && formik.touched.passwordrepeat ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                   value={formik.values.passwordrepeat}
                   onChange={formik.handleChange}
                 />
               </div>
-              <div>
-                {formik.errors.passwordrepeat && formik.touched.passwordrepeat ? formik.errors.passwordrepeat : ""}
-              </div>
+              {formik.errors.passwordrepeat && formik.touched.passwordrepeat && (
+                <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.passwordrepeat}</p>
+              )}
             </div>
           </div>
           <div>

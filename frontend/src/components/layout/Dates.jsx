@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Datepicker } from 'flowbite-react';
 import { useTheme } from '../../hooks/useTheme';
-import { FaCheck } from 'react-icons/fa';
 
-export const Dates = ({ setDate, rangeDatePicker }) => {
+export const Dates = ({ setDate, rangeDatePicker, formik }) => {
 
     const { primaryColor } = useTheme();
 
@@ -105,6 +104,9 @@ export const Dates = ({ setDate, rangeDatePicker }) => {
                             onChange={handleStartDateChange}
                         />
                     </div>
+                    {formik.errors.date && formik.touched.date && (
+                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.date}</p>
+                    )}
                 </div>
 
                 <div className='md:w-1/2'>
@@ -126,6 +128,9 @@ export const Dates = ({ setDate, rangeDatePicker }) => {
                             disabled={isChecked}
                         />
                     </div>
+                    {formik.errors.date && formik.touched.date && (
+                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.date}</p>
+                    )}
 
                     <div className='flex space-x-2 items-center'>
                         <input
@@ -160,6 +165,9 @@ export const Dates = ({ setDate, rangeDatePicker }) => {
                     onChange={handleEndDateChange}
                     disabled={isChecked}
                 />
+                {formik.errors.date && formik.touched.date && (
+                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.date}</p>
+                )}
                 <div className='flex space-x-2 items-center'>
                     <input
                         checked={isChecked}

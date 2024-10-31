@@ -9,14 +9,20 @@ import illustration from '../../../assets/img/undraw_account_re_o7id.svg'
 import { useTheme } from '../../../hooks/useTheme';
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required("Este campo es obligatorio"),
-  last_name: Yup.string().required("Este campo es obligatorio"),
+  name: Yup.string()
+    .required("El campo nombre es obligatorio")
+    .min(3, "El nombre tiene que tener al menos tres carácteres")
+    .max(20, "El nombre no puede superar los 20 carácteres"),
+  last_name: Yup.string()
+    .required("El campo apellido es obligatorio")
+    .min(3, "El apellido tiene que tener al menos tres carácteres")
+    .max(50, "El apellido no puede superar los 50 carácteres"),
   email: Yup.string()
-    .email("Email no válido")
-    .required("Este campo es obligatorio"),
+    .required("El email es obligatorio")
+    .email("El email no tiene un formato válido"),
   emailrepeat: Yup.string()
-    .oneOf([Yup.ref('email'), null], 'El email no coincide')
-    .required("Este campo es obligatorio"),
+    .oneOf([Yup.ref('email'), null], "Los correos electrónicos deben coincidir")
+    .required("La confirmación de email es obligatoria"),
   password: Yup.string()
     .min(8, "La contraseña debe tener al menos 8 caracteres")
     .required("Este campo es obligatorio"),
@@ -151,7 +157,7 @@ export const Register = () => {
             <div className='md:w-1/2'>
               <div>
                 <label htmlFor="emailrepeat" className={`block my-2 text-sm font-medium ${formik.errors.emailrepeat && formik.touched.emailrepeat ? "text-red-700 dark:text-red-500" : "text-gray-900 dark:text-white"}`}>
-                  Repetir correo electrónico
+                  Confirmar correo electrónico
                 </label>
                 <input
                   type="email"
@@ -191,7 +197,7 @@ export const Register = () => {
             <div className='md:w-1/2'>
               <div>
                 <label htmlFor="passwordrepeat" className={`block my-2 text-sm font-medium ${formik.errors.passwordrepeat && formik.touched.passwordrepeat ? "text-red-700 dark:text-red-500" : "text-gray-900 dark:text-white"}`}>
-                  Repetir contraseña
+                  Confirmar contraseña
                 </label>
                 <input
                   type="password"

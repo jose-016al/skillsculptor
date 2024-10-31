@@ -5,35 +5,34 @@ import { useAuth } from '../../../../hooks/useAuth';
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Alert } from '../../../layout/Alert';
-import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../../../hooks/useTheme';
 
-const FILE_SIZE = 1024 * 1024; // 1024 KB
-const SUPPORTED_FORMATS = ["image/jpeg", "image/png"];
+const PHOTO_SUPPORTED_FORMATS = ["image/png", "image/jpg", "image/jpeg"];
+const FILE_SIZE = 1024 * 1024;
 
 const validationSchema = Yup.object().shape({
   title: Yup.string()
-    .required("El título es obligatorio"),
+    .required("El campo titulo es obligatorio")
+    .min(3, "El titulo tiene que tener al menos tres carácteres")
+    .max(50, "El titulo no puede superar los 50 carácteres"),
   description: Yup.string()
-    .required("La descripción es obligatoria"),
+    .required("El campo descripción es obligatorio")
+    .min(10, "El descripción tiene que tener al menos 10 carácteres")
+    .max(500, "El descripción no puede superar los 500 carácteres"),
   demo: Yup.string()
     .url("Debe ser un enlace válido")
-    .nullable(), // Permite que sea opcional
+    .nullable(),
   github: Yup.string()
     .url("Debe ser un enlace válido")
-    .nullable(), // Permite que sea opcional
+    .nullable(),
   image: Yup.mixed()
     .nullable()
-    .test(
-      "fileSize",
-      "El archivo es demasiado grande. El tamaño máximo es 1024 KB",
-      (value) => !value || (value && value.size <= FILE_SIZE)
-    )
-    .test(
-      "fileFormat",
-      "Solo se permiten archivos de tipo JPEG o PNG",
-      (value) => !value || (value && SUPPORTED_FORMATS.includes(value.type))
-    ),
+    .test("fileFormat", "Formato de imagen inválido", (file) => {
+      return !file || PHOTO_SUPPORTED_FORMATS.includes(file.type);
+    })
+    .test("fileSize", "El archivo es demasiado grande, máximo 1024KB", (file) => {
+      return !file || file.size <= FILE_SIZE;
+    }),
 });
 
 export const Add = () => {
@@ -86,7 +85,7 @@ export const Add = () => {
               ...auth,
               portfolio: {
                 ...auth.portfolio,
-                project: [...auth.portfolio.project, data] // Añadir el nuevo proyecto al array
+                project: [...auth.portfolio.project, data] 
               }
             };
             setAuth(updatedUser);
@@ -99,7 +98,7 @@ export const Add = () => {
             ...auth,
             portfolio: {
               ...auth.portfolio,
-              project: [...auth.portfolio.project, data] // Añadir el nuevo proyecto al array
+              project: [...auth.portfolio.project, data] 
             }
           };
           setAuth(updatedUser);
@@ -144,14 +143,14 @@ export const Add = () => {
               <input
                 type="text"
                 name="title"
-                className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.border} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.title && formik.touched.title ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                 value={formik.values.title}
                 onChange={formik.handleChange}
               />
             </div>
-            <div>
-              {formik.errors.title && formik.touched.title ? formik.errors.title : ""}
-            </div>
+            {formik.errors.title && formik.touched.title && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.title}</p>
+            )}
           </div>
           <div className='md:w-1/2'>
             <div>
@@ -162,13 +161,13 @@ export const Add = () => {
                 type="file"
                 name='image'
                 id='file1'
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className={`bg-gray-50 border text-sm rounded-lg block w-full ${formik.errors.image && formik.touched.image ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                 onChange={handleImageChange}
               />
             </div>
-            <div>
-              {formik.errors.image && formik.touched.image ? formik.errors.image : ""}
-            </div>
+            {formik.errors.image && formik.touched.image && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.image}</p>
+            )}
           </div>
         </div>
         <div className='flex flex-col md:flex-row md:space-x-4'>
@@ -180,14 +179,14 @@ export const Add = () => {
               <input
                 type="text"
                 name="demo"
-                className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.border} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.demo && formik.touched.demo ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                 value={formik.values.demo}
                 onChange={formik.handleChange}
               />
             </div>
-            <div>
-              {formik.errors.demo && formik.touched.demo ? formik.errors.demo : ""}
-            </div>
+            {formik.errors.demo && formik.touched.demo && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.demo}</p>
+            )}
           </div>
           <div className='md:w-1/2'>
             <div>
@@ -197,14 +196,14 @@ export const Add = () => {
               <input
                 type="text"
                 name="github"
-                className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.border} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.github && formik.touched.github ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                 value={formik.values.github}
                 onChange={formik.handleChange}
               />
             </div>
-            <div>
-              {formik.errors.github && formik.touched.github ? formik.errors.github : ""}
-            </div>
+            {formik.errors.github && formik.touched.github && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.github}</p>
+            )}
           </div>
         </div>
         <div className='flex flex-col md:flex-row'>
@@ -215,14 +214,14 @@ export const Add = () => {
               </label>
               <textarea
                 name="description"
-                className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ${primaryColor.focusRing} ${primaryColor.border} block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
+                className={`bg-gray-50 border text-sm rounded-lg block w-full p-2.5 ${formik.errors.description && formik.touched.description ? "border-red-500 bg-red-50 text-red-900 placeholder-red-700 focus:ring-red-500 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500" : "border-gray-300 text-gray-900"} ${primaryColor.focusRing} ${primaryColor.focusBorder} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white`}
                 value={formik.values.description}
                 onChange={formik.handleChange}
               />
             </div>
-            <div>
-              {formik.errors.password && formik.touched.password ? formik.errors.password : ""}
-            </div>
+            {formik.errors.description && formik.touched.description && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-500">{formik.errors.description}</p>
+            )}
           </div>
         </div>
         <div>

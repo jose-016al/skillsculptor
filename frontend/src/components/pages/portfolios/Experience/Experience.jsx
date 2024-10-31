@@ -72,7 +72,7 @@ export const Experience = () => {
                           <p className="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">{item.company}</p>
                         }
                       </li>
-                    ))}
+                    )).reverse()}
                   </ol>
                   {totalPages > 1 && (
                     <div className="flex justify-center mt-5">

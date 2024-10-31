@@ -34,7 +34,7 @@ export const EdiExperience = () => {
                             {item.company}
                           </a>
                           :
-                          <p className="text-base font-normal text-gray-500 dark:text-gray-400">{item.company}</p>
+                          <p className="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">{item.company}</p>
                         }
                       </div>
                     </Accordion.Title>
