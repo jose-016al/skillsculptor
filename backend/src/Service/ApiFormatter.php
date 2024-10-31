@@ -15,6 +15,7 @@ class ApiFormatter
             // 'password' => $user->getPassword(),
             'roles' => $user->getRoles(),
             'image' => $user->getImage(),
+            'theme' => $user->getTheme(),
         );
 
         $portfolio = $user->getPortfolio();

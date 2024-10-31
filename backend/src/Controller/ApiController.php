@@ -63,7 +63,20 @@ class ApiController extends AbstractController
         $user->setName($data['name']);
         $user->setLastName($data['last_name']);
         $user->setRoles(['ROLE_USER']);
-        $user->setImage('default.png'); // Asegúrate de que la imagen default.png esté en la carpeta correcta
+        $user->setImage('default.png');
+        $user->setTheme([
+            'mode' => 'dark',
+            'color' => [
+                'bg' => 'bg-blue-700',
+                'hover' => 'hover:bg-blue-500',
+                'text' => 'text-blue-700',
+                'ring' => 'ring-blue-500',
+                'border' => 'border-blue-500',
+                'focusRing' => 'focus:ring-blue-500',
+                'focusBorder' => 'focus:border-blue-500',
+                'hex' => '#1d4ed8'
+            ],
+        ]);
         $user->setPassword(
             $userPasswordHasher->hashPassword(
                 $user,
@@ -192,6 +205,7 @@ class ApiController extends AbstractController
         $user->setEmail($data['email']);
         $user->setName($data['name']);
         $user->setLastName($data['last_name']);
+        $user->setTheme($data['theme']);
 
         if (!empty($data['password'])) {
             $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);

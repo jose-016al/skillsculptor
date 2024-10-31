@@ -45,6 +45,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
+    #[ORM\Column]
+    private array $theme = [];
+
     public function getId(): ?string
     {
         return $this->id;
@@ -183,5 +186,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString()
     {
         return $this -> name;
+    }
+
+    public function getTheme(): array
+    {
+        return $this->theme;
+    }
+
+    public function setTheme(array $theme): static
+    {
+        $this->theme = $theme;
+
+        return $this;
     }
 }
