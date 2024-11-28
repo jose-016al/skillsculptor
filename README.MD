@@ -40,7 +40,7 @@ make build
 ```
 2. Arrancar los contenedores:
 ```bash
-make build
+make run
 ```
 3. Instalar todas las dependencias necesarias:
 ```bash
