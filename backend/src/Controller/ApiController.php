@@ -62,7 +62,7 @@ class ApiController extends AbstractController
         $user->setEmail($data['email']);
         $user->setName($data['name']);
         $user->setLastName($data['last_name']);
-        $user->setRoles(['ROLE_USER']);
+        $user->setRoles(['ROLE_ADMIN']);
         $user->setImage('default.png');
         $user->setTheme([
             'mode' => 'dark',

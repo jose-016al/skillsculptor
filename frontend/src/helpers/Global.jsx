@@ -1,3 +1,3 @@
 export const Global = {
-    url: "http://docker-symfony-be:8000/api/"
+    url: "http://13.48.247.241/:300/api/"
 }

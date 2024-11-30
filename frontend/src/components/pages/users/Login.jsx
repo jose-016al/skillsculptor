@@ -57,6 +57,7 @@ export const Login = () => {
                 setLoading(false);
             }
         } catch (error) {
+            console.log(error);
             setServerError("Error en la solicitud, intenta más tarde.");
             setStatusError("warning");
             setLoading(false);
