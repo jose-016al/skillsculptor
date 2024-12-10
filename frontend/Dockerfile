@@ -1,23 +1,11 @@
-FROM node:18-alpine
-
+FROM node:18 as builder
 WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
 
-# COPY package.json .
-
-# RUN npm install
-
-# RUN npm i -g serve
-
-# COPY . .
-
-# RUN npm run build
-
-# Copia solo la construcción precompilada
-COPY dist ./dist
-
-# Instala 'serve' para servir los archivos estáticos
-RUN npm install -g serve
-
-EXPOSE 3000
-
-CMD [ "serve", "-s", "dist" ]
+FROM nginx:alpine
+COPY --from=builder /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
