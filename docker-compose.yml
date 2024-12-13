@@ -15,21 +15,6 @@ services:
     networks:
       - app-network
 
-  web:
-    container_name: web
-    build:
-      context: ./backend/docker/nginx
-      args:
-        UID: 1000
-    ports:
-      - 8080:80
-    volumes:
-      - ./backend/public:/appdata/www/public
-    networks:
-      - app-network
-    depends_on:
-      - backend
-
   backend:
     container_name: backend
     build:
@@ -47,6 +32,21 @@ services:
       - app-network
     depends_on:
       - db
+
+  web:
+    container_name: web
+    build:
+      context: ./backend/docker/nginx
+      args:
+        UID: 1000
+    ports:
+      - 8080:80
+    volumes:
+      - ./backend/public:/appdata/www/public
+    networks:
+      - app-network
+    depends_on:
+      - backend
 
   frontend:
     container_name: frontend
