@@ -10,8 +10,8 @@ services:
       MYSQL_PASSWORD: password
       MYSQL_ROOT_PASSWORD: root
     command: mysqld --sql_mode="STRICT_ALL_TABLES,NO_ENGINE_SUBSTITUTION"
-    # volumes:
-    #   - docker-symfony-database-data:/var/lib/mysql 
+    volumes:
+      - docker-symfony-database-data:/var/lib/mysql 
     networks:
       - app-network
 
@@ -58,8 +58,8 @@ services:
     networks:
       - app-network
 
-# volumes:
-#   docker-symfony-database-data:
+volumes:
+  docker-symfony-database-data:
 
 networks:
   app-network:
