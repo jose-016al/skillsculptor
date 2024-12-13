@@ -3,7 +3,7 @@ services:
     container_name: db
     image: mysql:8.0
     ports:
-      - 40000:3306
+      - 3306:3306
     environment:
       MYSQL_DATABASE: skillsculptor
       MYSQL_USER: user
@@ -43,7 +43,6 @@ services:
     volumes:
       - ./backend/:/appdata/www
       - ./backend/docker/php/xdebug-linux.ini:/usr/local/etc/php/conf.d/xdebug.ini
-      - ./backend/vendor:/appdata/www/vendor
     networks:
       - app-network
     depends_on:
